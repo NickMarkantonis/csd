@@ -96,8 +96,8 @@
 4. Παραδείγματα Κώδικα:
     - Ακολουθεί ένα παράδειγμα κώδικα
     ```c
-    #include<stdio.h>
-    #include<pthread.h>
+    #include <stdio.h>
+    #include <pthread.h>
     
     void ∗do_something(void ∗p) {
         printf(”Hello from %s thread\n”, (char∗)p);
@@ -110,6 +110,6 @@
         pthread_create(&tid, NULL, do_something, msg2);
         do_something(msg1);
     return 0;
-}
+    }
     ```
 

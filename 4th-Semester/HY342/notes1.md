@@ -112,4 +112,28 @@
     return 0;
     }
     ```
+    Στο παράδειγμα αυτό δημιουργείται ένα νήμα που εκτελέι την συνάρτηση `do_smth`. Το κύριο νήμα (parent) 
+και το νέο νήμα (child) εκτελούν την ίδια συνάρτηση, αλλα μπορεί να υπάρξει **reace condition** επειδή και τα
+δύο νήματα προσπαθούν να γράψουν στην ίδια έξοδο (το terminal) ταυτόχρονα.
+    - Άλλο ένα παράδειγμα
+    ```c
+    #include <stdio.h>
+    #include <pthread.h>
+    
+    void ∗do_something(void ∗p) {
+        printf(”Hello from %s thread\n”, (char∗)p);
+        return NULL;
+    }
+
+    int main() {
+        pthread_t tid;
+        char ∗msg1 = ”parent”, ∗msg2 = ”child”;
+        pthread_create(&tid, NULL, do_something, msg2);
+        do_something(msg1);
+        pthread_join(tid, NULL);
+        return 0;
+    }
+    ```
+    Σε αυτό το παράδειγμα προσθέτουμε την `pthread_join` για να συγχρονιστεί ο τερματισμός του νήματος. Αυτό
+εξασφαλίζει ότι το κύριο νήμα θα περιμένει το τέλος του child νήματος πρίν τερματιστεί.
 

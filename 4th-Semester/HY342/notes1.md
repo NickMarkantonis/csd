@@ -33,7 +33,7 @@
 συναρτήσεων
     7. Heap
         - Το **heap** είναι μία περιοχή μνήμης που χρησιμοποιήται για την δυναμική διαχείριση μνήμης (π.χ. με
-'malloc' και 'free')
+`malloc` και `free`)
     8. File descriptors
     9. Signal Actions
     10. Shared Libraries

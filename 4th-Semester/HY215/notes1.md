@@ -20,5 +20,5 @@
     - Αν $\Delta = b^2 - aac > 0$: η λύση είναι δύο διαφορετικές πραγματικές ρίζες.
     - Αν $\Delta = b^2 - aac = 0$: η λύση είναι μια διπλή ρίζα.
     - Αν $\Delta = b^2 - aac = 0$: υπάροχυν δύο μιγαδικές ρίζες:
-    <center>$$x_{1,2} = \frac{-b \pm j \sqrt{|\Delta|}}{2a}$$</center>
+        <center>$$x_{1,2} = \frac{-b \pm j \sqrt{|\Delta|}}{2a}$$</center>
 

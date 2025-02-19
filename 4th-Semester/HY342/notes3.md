@@ -267,3 +267,61 @@ int main() {
 - Η `errno` είναι μία μεταβλητή που δείχνει τον τελευταίο κωδικό σφάλματος
 - Σε multi-threaded πρόγραμμα, κάθε thread έχει δική του errno
 
+#### Deadlocks (Αδιέξοδα στα threads)
+Τι είναι το deadlock;
+- Ένα deadlock συμβαίνει όταν δύο ή περισσότερα threads περιμένουν το ένα το άλλο να ξεκλειδώσει κάποιον πόρο.
+- Κανένα thread δεν μπορεί να συνεχίσει, με αποτέλεσμα το πρόγραμμα να "κολλήσει" επ' άπειρον
+
+##### Παράδειγμα Deadlock
+```c
+pthread_mutex_lock(&lockA);
+pthread_mutex_lock(&lockB);
+work();
+pthread_mutex_unlock(&lockA);
+pthread_mutex_unlock(&lockB);
+
+// Σε άλλο thread:
+pthread_mutex_lock(&lockB);
+pthread_mutex_lock(&lockA);
+work();
+pthread_mutex_unlock(&lockB);
+pthread_mutex_unlock(&lockA);
+```
+- Άν το πρώτο thread κλειδώσει το `lockA` και το δεύτερο `lockB`, το καθένα περιμένει το άλλο και κανένα δεν προχωρά
+
+##### Πώς αποφέυγεται το Deadlock
+1. Να τηρείται μία σταθερή σειρά κλειδώματος (π.χπ πάντα πρώτα `lockA` και μετά `lockB`)
+2. Χρήση `trylock()` αντί για `lock()` για να αποφέυγεται η αναμονή.
+
+#### Livelock (Ζωντανό Αδιέξοδο)
+- Στο livelock, τα threads δεν είναι μπλοκαρισμένα αλλά συνεχώς αλλάζουν κατάσταση χωρίς να κάνουν πρόοδο.
+- Συχνά συμβαίνει όταν δύο threads προσπαθούν να είναι "ευγενικά" και να παραχωρήσουν τον πόρο το ένα στο άλλο.
+
+##### Παράδειγμα Livelock
+```c
+while (retrying) {
+    if (pthread_mutex_trylock(&lockA)) {
+        if (pthread_mutex_trylock(&lockB)) {
+            work();
+            pthread_mutex_unlock(&lockB);
+            retrying = 0;
+        }
+        pthread_mutex_unlock(&lockA);
+    }
+}
+```
+- Αν δύο threads κάνουν το ίδιο, μπορεί να κλειδώνουν αμέσως και να ξαναδοκιμάζουν χωρίς να κάνουν πρόοδο
+
+#### Priority Inversion (Αναστροφή Προτεραιότητας)
+- Ένα thread υψηλής προτεραιότητας περιμένει για έναν πόρο που κατέχει ένα thread χαμηλής προτεραιότητας.
+- Άν ένα thread μεσαίας προτεραιότητας εμποδίζει το χαμηλό να εκτελεστεί, το υψηλό μένει κολλημένο.
+
+```c
+pthread_mutex_lock(&resource);  // Χαμηλού προτεραιότητας thread
+// ... κάνει κάποια επεξεργασία ...
+pthread_mutex_unlock(&resource);
+```
+- Άν ένα **μεσαίο thread** εκτελείται συνεχώς, το χαμηλό δεν ξεκλειδώνει τον πόρο, και το υψηλό περιμένει επ' άπειρο
+
+**Λύση:**
+- Χρήση **Priority Inheritance**, όπου ένα χαμηλού προτεραιότητας thread κρατάει lock, αυξάνει προσωρινά η προτεραιότητα ώστε να ξεκλειδώσει γρήγορότερα.

@@ -174,3 +174,96 @@ void *rare_writer_func(void *arg) {
 | Δεν διαχωρίζει αναγνώστες-συγγραφείς | Χρησιμοποιεί δύο επίπεδα πρόσβασης |
 
 RW locks είναι ιδανικά αν τα περισσότερα threads διαβάζουν και σπάνια γίνονται εγγραφές.
+
+#### Bariers: Συγχρονισμός μεταξύ πολλών threads
+##### Τί είναι τα Barriers;
+- Τα barriers (φράγες συγχρονισμού) είναι ένας μηχανισμός όπου όλα τα threads περιμένουν να φτάσουν σε ένα συγκεκριμμένο σημείο π´ριν συνεχίσουν.
+- Σκεφτείτε το σαν μία γραμμή εκκίνησης όπου διαφορετικά threads πρέπει να συγχρονιστούν πρίν εκτελέσουν την επόμενη φάση υπολογισμού
+
+##### Χαρακτηριστικά των Barriers
+- Δεν χρειάζονται όλα τα threads να περιμένουν - μόνο ένας προκαθορισμένος αριθμός
+- Συμπεριφέρεται σαν έναν καταμετρητή (counter) που περιμένει να φτάσουν όλα τα απαραίτητα threads πριν τους επιτρέψει να προχωρήσουν.
+
+#### Barrier API (POSIX Pthreads)
+##### Αρχικοποίηση και καταστροφή
+
+```c
+int pthread_barrier_init(
+    pthread_barrier_t *barrier, 
+    const pthread_barrierattr_t *attr, 
+    unsigned count
+);
+```
+- `barrier`: Δείκτης στο barrier object που θα αρχικοποιηθεί.
+- `attr`: Δομή με ιδιότητες του barrier (συνήθως `NULL` για deffault τιμές)
+- `count`: Ο αριθμός των threads που πρέπει να φτάσουν στο barrier πριν συνεχίσουν
+
+```c
+int pthread_barrier_destroy(pthread_barrier_t *barrier);
+```
+- Χρησιμοποιείται για να καταστρέψει το barrier και να απελευθερώσει πόρους.
+
+##### Χρήση του Barrier
+```c
+int pthread_barrier_wait(pthread_barrier_t *barrier);
+```
+- Όταν ένα thread καλεί `pthread_barrier_wait`, **μπλοκάρεται** μέχρι να φτάσουν όλα τα απαραίτητα threads
+- Όταν το τελευταίο thread φτάσει στο barrier, όλα τα threads απελευθερώνονται ταυτόχρονα.
+
+#### Παράδειγμα: Χρήση Barrier
+```c
+#include <stdio.h>
+#include <pthread.h>
+
+#define NUM_THREADS 4
+
+pthread_barrier_t barrier;
+
+void *worker_func(void *arg) {
+    int id = *(int *)arg;
+    printf("Thread %d: Έφτασα στο barrier.\n", id);
+    
+    pthread_barrier_wait(&barrier); // Όλα τα threads περιμένουν εδώ
+
+    printf("Thread %d: Συνεχίζω μετά το barrier.\n", id);
+    return NULL;
+}
+
+int main() {
+    pthread_t threads[NUM_THREADS];
+    int thread_ids[NUM_THREADS];
+
+    pthread_barrier_init(&barrier, NULL, NUM_THREADS); // Barrier για 4 threads
+
+    for (int i = 0; i < NUM_THREADS; i++) {
+        thread_ids[i] = i;
+        pthread_create(&threads[i], NULL, worker_func, &thread_ids[i]);
+    }
+
+    for (int i = 0; i < NUM_THREADS; i++) {
+        pthread_join(threads[i], NULL);
+    }
+
+    pthread_barrier_destroy(&barrier);
+    return 0;
+}
+```
+**Εξήγηση κώδικα**
+- Δημιουργούμε 4 threads που καλούν `pthread_barrier_wait`.
+- Κανένα δεν συνεχίζει μέχρι να φτάσουν όλα στο barrier
+- Ότνα φτάσει το 4ο thread, όλα συνεχίζουν ταυτόχρονα
+
+#### Πιθανά προβλήματα με Threads
+**1. fork() και exec() με threads**
+- Όταν ένα multi-threaded πρόγραμμα εκτελεί `fork()`, μόνο το thread που κάλεσε το fork επιβιώνει στο νέο process
+- Αυτό μπορεί να προκαλέσει ασυνέπειες στη μνήμη αν το πρόγραμμα δεν είναι σχεδιασμένο σωστά
+- Η λύση είναι η χρήση της `pthread_atfork()` που επιτρέπει σωστό συγχρονισμό πρίν και μετά απο `fork()`.
+
+**2. Thread Safety**
+- Ορισμένες συναρτήσεις της C, δεν είναι thread-safe, π.χ. `strtok()`, `gethostbyname()`, `ctime()`.
+- Αντί για αυτές υπάρχουν reentrant εκδόσεις (π.χ `strtok_r(), gethostbyname_r()`).
+
+**3. Λάθη λόγω errno**
+- Η `errno` είναι μία μεταβλητή που δείχνει τον τελευταίο κωδικό σφάλματος
+- Σε multi-threaded πρόγραμμα, κάθε thread έχει δική του errno
+

@@ -9,7 +9,7 @@
 ### 📥 Κατέβασμα των αρχείων
 Μπορείτε να κατεβάσετε τα αρχεία από το κουμπί "Code" και επιλέγοντας "Download ZIP" ή να εκτελέσετε την παρακάτω εντολή στο terminal σας:
 ```bash
-git clone https://github.com/username/repository.git
+git clone https://github.com/NickMarkantonis/csd.git
 ```
 
 ## ℹ️ Σημαντικές Πληροφορίες

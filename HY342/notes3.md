@@ -137,13 +137,8 @@ int main() {
     // Δημιουργία του writer thread
     pthread_create(&writer, NULL, rare_writer_func, NULL);
 
-    // Join threads (αναμονή για να ολοκληρωθούν)
-    for (int i = 0; i < NUM_READERS; i++) {
-        pthread_join(readers[i], NULL);
-    }
-    pthread_join(writer, NULL);
+    // ...
 
-    pthread_rwlock_destroy(&data_rw_lock);  // Καταστροφή του lock
     return 0;
 }
 
@@ -195,7 +190,7 @@ int pthread_barrier_init(
 );
 ```
 - `barrier`: Δείκτης στο barrier object που θα αρχικοποιηθεί.
-- `attr`: Δομή με ιδιότητες του barrier (συνήθως `NULL` για deffault τιμές)
+- `attr`: Δομή με ιδιότητες του barrier
 - `count`: Ο αριθμός των threads που πρέπει να φτάσουν στο barrier πριν συνεχίσουν
 
 ```c

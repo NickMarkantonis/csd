@@ -1,0 +1,86 @@
+#! /usr/bin/vvp
+:ivl_version "12.0 (stable)";
+:ivl_delay_selection "TYPICAL";
+:vpi_time_precision + 0;
+:vpi_module "/usr/lib/x86_64-linux-gnu/ivl/system.vpi";
+:vpi_module "/usr/lib/x86_64-linux-gnu/ivl/vhdl_sys.vpi";
+:vpi_module "/usr/lib/x86_64-linux-gnu/ivl/vhdl_textio.vpi";
+:vpi_module "/usr/lib/x86_64-linux-gnu/ivl/v2005_math.vpi";
+:vpi_module "/usr/lib/x86_64-linux-gnu/ivl/va_math.vpi";
+S_0x56dd552bc110 .scope module, "test_Mult" "test_Mult" 2 28;
+ .timescale 0 0;
+v0x56dd552d4b10_0 .var "A", 0 0;
+v0x56dd552d4c20_0 .var "B", 0 0;
+v0x56dd552d4d30_0 .net "C", 0 0, L_0x56dd552d51f0;  1 drivers
+v0x56dd552d4dd0_0 .var "I", 0 0;
+S_0x56dd552bc2a0 .scope module, "uut" "OneBitMultiplexer" 2 32, 2 13 0, S_0x56dd552bc110;
+ .timescale 0 0;
+    .port_info 0 /OUTPUT 1 "C";
+    .port_info 1 /INPUT 1 "A";
+    .port_info 2 /INPUT 1 "B";
+    .port_info 3 /INPUT 1 "I";
+L_0x56dd552d51f0 .functor BUFZ 1, L_0x56dd552d5020, C4<0>, C4<0>, C4<0>;
+v0x56dd552d4430_0 .net "A", 0 0, v0x56dd552d4b10_0;  1 drivers
+v0x56dd552d4500_0 .net "And1", 0 0, L_0x56dd552d4e70;  1 drivers
+v0x56dd552d45f0_0 .net "And2", 0 0, L_0x56dd552d4f70;  1 drivers
+v0x56dd552d46e0_0 .net "B", 0 0, v0x56dd552d4c20_0;  1 drivers
+v0x56dd552d4780_0 .net "C", 0 0, L_0x56dd552d51f0;  alias, 1 drivers
+v0x56dd552d4870_0 .net "I", 0 0, v0x56dd552d4dd0_0;  1 drivers
+v0x56dd552d4960_0 .net "NotI", 0 0, L_0x56dd552d4ee0;  1 drivers
+v0x56dd552d4a50_0 .net "Or1", 0 0, L_0x56dd552d5020;  1 drivers
+S_0x56dd552bcd30 .scope module, "and1" "And" 2 18, 2 1 0, S_0x56dd552bc2a0;
+ .timescale 0 0;
+    .port_info 0 /OUTPUT 1 "C";
+    .port_info 1 /INPUT 1 "A";
+    .port_info 2 /INPUT 1 "B";
+L_0x56dd552d4e70 .functor AND 1, v0x56dd552d4c20_0, v0x56dd552d4dd0_0, C4<1>, C4<1>;
+v0x56dd552bfa60_0 .net "A", 0 0, v0x56dd552d4c20_0;  alias, 1 drivers
+v0x56dd552bc4f0_0 .net "B", 0 0, v0x56dd552d4dd0_0;  alias, 1 drivers
+v0x56dd552bbab0_0 .net "C", 0 0, L_0x56dd552d4e70;  alias, 1 drivers
+S_0x56dd552d36d0 .scope module, "and2" "And" 2 21, 2 1 0, S_0x56dd552bc2a0;
+ .timescale 0 0;
+    .port_info 0 /OUTPUT 1 "C";
+    .port_info 1 /INPUT 1 "A";
+    .port_info 2 /INPUT 1 "B";
+L_0x56dd552d4f70 .functor AND 1, v0x56dd552d4b10_0, L_0x56dd552d4ee0, C4<1>, C4<1>;
+v0x56dd552d3900_0 .net "A", 0 0, v0x56dd552d4b10_0;  alias, 1 drivers
+v0x56dd552d39e0_0 .net "B", 0 0, L_0x56dd552d4ee0;  alias, 1 drivers
+v0x56dd552d3aa0_0 .net "C", 0 0, L_0x56dd552d4f70;  alias, 1 drivers
+S_0x56dd552d3bc0 .scope module, "not1" "Not" 2 20, 2 9 0, S_0x56dd552bc2a0;
+ .timescale 0 0;
+    .port_info 0 /OUTPUT 1 "B";
+    .port_info 1 /INPUT 1 "A";
+L_0x56dd552d4ee0 .functor NOT 1, v0x56dd552d4dd0_0, C4<0>, C4<0>, C4<0>;
+v0x56dd552d3da0_0 .net "A", 0 0, v0x56dd552d4dd0_0;  alias, 1 drivers
+v0x56dd552d3e40_0 .net "B", 0 0, L_0x56dd552d4ee0;  alias, 1 drivers
+S_0x56dd552d3f30 .scope module, "or1" "Or" 2 23, 2 5 0, S_0x56dd552bc2a0;
+ .timescale 0 0;
+    .port_info 0 /OUTPUT 1 "C";
+    .port_info 1 /INPUT 1 "A";
+    .port_info 2 /INPUT 1 "B";
+L_0x56dd552d5020 .functor OR 1, L_0x56dd552d4e70, L_0x56dd552d4f70, C4<0>, C4<0>;
+v0x56dd552d4160_0 .net "A", 0 0, L_0x56dd552d4e70;  alias, 1 drivers
+v0x56dd552d4250_0 .net "B", 0 0, L_0x56dd552d4f70;  alias, 1 drivers
+v0x56dd552d4320_0 .net "C", 0 0, L_0x56dd552d5020;  alias, 1 drivers
+    .scope S_0x56dd552bc110;
+T_0 ;
+    %pushi/vec4 1, 0, 1;
+    %store/vec4 v0x56dd552d4b10_0, 0, 1;
+    %pushi/vec4 0, 0, 1;
+    %store/vec4 v0x56dd552d4c20_0, 0, 1;
+    %pushi/vec4 0, 0, 1;
+    %store/vec4 v0x56dd552d4dd0_0, 0, 1;
+    %delay 10, 0;
+    %vpi_call 2 37 "$display", "A = %b B = %b I = %b C = %b", v0x56dd552d4b10_0, v0x56dd552d4c20_0, v0x56dd552d4dd0_0, v0x56dd552d4d30_0 {0 0 0};
+    %pushi/vec4 1, 0, 1;
+    %store/vec4 v0x56dd552d4dd0_0, 0, 1;
+    %delay 10, 0;
+    %vpi_call 2 39 "$display", "A = %b B = %b I = %b C = %b", v0x56dd552d4b10_0, v0x56dd552d4c20_0, v0x56dd552d4dd0_0, v0x56dd552d4d30_0 {0 0 0};
+    %vpi_call 2 41 "$finish" {0 0 0};
+    %end;
+    .thread T_0;
+# The file index is used to find the file name in the following table.
+:file_names 3;
+    "N/A";
+    "<interactive>";
+    "Mulitplexer.v";

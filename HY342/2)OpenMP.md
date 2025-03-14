@@ -156,3 +156,131 @@ reduction (operator: variable list)
     }
 }
 ```
+
+## Συγχρονισμός 
+Το OpenMP παρέχει μηχανισμούς για συγχρονισμό των threads και διαχείριση της μνήμης.
+- **single/master**: Υπολογισμός που εκτελείται από ένα μόνο thread
+- **Patterns επικοινωνίας**: Τρόποι οργάνωσης της ανταλλαγής δεδομένων και συγχρονισμού μεταξύ threads, ώστε να επιτυγχάνεται αποδοτική κατανομή της εργασίας και αποφυγή συγκρούσεων στη μνήμη.
+  - Reduction
+  - Synchronized structures
+
+### Δομές Συγχρονισμού
+- **critical**: Επιτρέπει μόνο σε ενα thread να εκτελεί κρίσιμο τμήμα κώδικα
+    ```c
+    float res;
+    #pragma omp parallel
+    {
+        float B;
+        int i, id, NumThreads;
+        id = omp_get_thread_num();          /* get the current thread ID */
+        NumThreads = omp_get_num_threads()  /* get the number of threads */
+        for (i = id; i < NumIter; i+=NumThreads)
+            B = big_job(i);     /* Big Jobs running in parallel */
+        #pragma omp critical
+            consume(B,res);     /* Only one thread at the time performs this */
+    }
+    ```
+- **atomic**: Μόνο για εγγραφή στη μνήμη, πιο γρήγορο από το critical.
+    ```c
+    #pragma omp parallel
+    {
+        double tmp, B;
+        B = doit();         /* parallel */
+        tmp = big_ugly(B);  /* parallel */
+        #pragma omp atomic
+            X += tmp;   /* One thread at the time */
+    }
+    ```
+- **barier**: **Όλα** τα threads σταματούν σε αυτό το σημείο πρίν προχωρήσουν
+    Πολλά constructs έχουν ήδη ένα barrier στο τέλος τους, δεν χρειάζεται δηλαδή να το δηλώσουμε
+    Τα constructs αυτά είναι τα:
+    - `#pragma omp parllel`
+    - `#pragma omp for` (εκός άμα έχουμε το `nowait` στο τέλος)
+    - `#pragma omp selections`
+    ```c
+    #pragma omp for
+    for (i = 0; i < N; i++)
+        a[i] = c[i] + b[i];
+    /* -- implicit barrier -- */
+    pragma omp for nowait
+    for (i = 0; i < N; i++)
+        d[i] = a[i] + b[i];
+    /* -- no barrier here -- */
+    ```
+    Μπορούμε προφανώς να βάλουμε και εμείς barrier όπου θέλουμε με την εντολή: `#pragma omp barrier`
+- **ordered**: Επιβάλλει σειρά εκτέλεσης μεταξύ των threads
+    Επιτρέπει παράλληλη εκτέλεση αλλά η εκτύπωση γίνεται με τη σωστή σειρά
+    Χρησιμοποιείται μόνο μέσα σε `#pragma omp for ordered`
+- **locks**: Χαμηλού επιπέδου συγχρονισμός, όπως στα pthreads
+    - `omp_init_lock(&lock)`: Αρχικοποίηση lock
+    - `omp_set_lock(&lock)`: Επιτρέπει μόνο σε ένα thread να εκτελέση την κρίσιμη περιοχή
+    - `omp_unset_lock(&lock)`: Απελευθέρωση κλειδώματος
+    - `omp_destroy_lock(&lock)`: Καταστροφή lock
+- **flush**: Διασφαλίζει οτι όλες οι εγγραφές στη μνήμη είναι σε όλα τα threads
+
+## Παράδειγμα Sections
+Κομμάτια κώδικα που θα εκτελεστούν παράλληλα, απο 1 thread το κάθε ένα
+```c
+#pragma omp parallel default (none) shared(n,a,b,c,d) private(i)
+{
+  #pragma omp sections nowait /* Προσοχή στον πληθυντικός */
+  {
+    #pragma omp section
+    for (i=0; i<n-1; i++)
+      b[i] = (a[i] + a[i+1]) / 2;
+      
+    #pragma omp section
+    for (i=0; i<n; i++)
+      d[i] = 1.0/c[i];
+  }
+}
+```
+
+## Χρήση `single` και `master`
+- `single`: Εκτελείται από ένα μόνο thread, χωρίς barrier στην είσοδο/έξοδο
+    ```c
+    #pragma omp single [clause[[,] clause] ...]
+    {
+        // code
+    }
+    ```
+- `master`: Εκτελείται μόνο απο το master thread, χωρίς *implicit barrier*
+    ```c
+    #pragma omp master [clause[[,] clause] ...]
+    {
+        // code
+    }
+    ```
+Χρησιμέουν σε κώδικα που πρέπει να τρέξει σε έναν επεξεργαστή π.χ I/O
+
+## Διαχείριση Threads
+- Αριθμός threads
+    - `omp_set_num_threads(int num_threads)`: Ορίζει τον αριθμός των threads
+    - `omp_get_num_threads()`: Επιστρέφει τον τρέχοντα αριθμός απο threads
+    - `omp_get_thread_num()`: Επιστρέφει το ID του thread
+- Δυναμική Ρύθμιση threads
+    - `omp_set_dynamic(int dynamic)`: Ενεργοποιεί/Απενεργοποιεί τη δυναμική ρύθμιση του αριθμού των threads
+    - `omp_get_dynamic()`: Επιστρέφει αν η δυναμική ρύθμιση του αριθμού των threads είναι ενεργοποιημένη
+- Διαθέσιμοι επεξεργαστές
+    - `omp_num_procs()`: Επιστρέφει τον αριθμό των διαθέσιμων επεξεργαστών (CPU cores) στο σύστημα
+
+## Sceduling (Κατανομή Εργασίας)
+Το Scheduling στο OpenMP αναφέρεται στον τρόπο κατανομής των επαναλήψεων μιας παράλληλης περιοχής (`for`) σε διαφορετικά threads. Το OpenMP περέχει διάφορους αλγόριθμους scheduling για την κατανομή των εργασιών (worksharing), συγκεκριμμένα:
+- **static** `schedule(static, [chunk])`: Η κατανομή επαναλήψεων γίνεται *στατικά* κατα τον χρόνο μεταγλώττισης. Οι επαναλήψεις χωρίζονται σε κομμάτια και κάθε thread αναλαμβάνει ένα απο αυτά τα κομμάτια
+    - Ο αριθμός των επαναλήψεων ανά thread είναι ίσως προκαθορισμένος 
+    - Εάν δεν ορίσετε την παράμετρο `chunk`, τότε κάθε thread αναλαμβάνει τον ίδιο αριθμό επαναλήψεων
+- **dynamic** `schedule(dynamic, [chunk])`: Στην κατανομή dynamic οι επαναλήψεις χωρίζονται σε κομμάτια (chunks) και κάθε thread που ολοκληρώνει ένα chunk παίρνει το **επόμενο διαθέσιμο chunk**
+    - Χρησιμοποιήτε όταν οι εργασίες μπορεί να είναι ακανόνηστες ή διαφορετικής διάρκειας, καθώς δίνει ευελιξία στο σύστημα για να εκτελούνται οι επαναλήψεις ανάλογα μα την προοδευτική ολοκλήρωση των threads.
+- **guided** `schedule(guided, [chunk])`: Παρόμοιο με το dynamic, αλλά κομμάτια αρχικά ειναι μεγαλύτερα και στην συνέχεια μικραίνουν καθώς οι επαναλήψεις ολοκληρώνονται. 
+    - Tο `guided` χρησιμοποιείται όταν οι επαναλήψεις έχουν σημαντική **διαφορετική διάρκεια** και θέλουμε οι πιο μεγάλες εργασίες να ανατίθενται πρώτες, ώστε τα μικρότερα κομμάτια να εκτελούνται σταδιακά  
+    - `chunk`: Το μέγεθος του αρχικού κομματιού (chunk). Αν δεν καθοριστεί γίνεται το αρχικό chunk το μέγεθος της υπόλοιπης εργασίας.
+- **runtime** `schedule(runtime)`: Ο αλγόρυθμος κατανομής εργασίας καθορίζεται από το **Unix Enviroment** τη στιγμή που ξεκινάει το πρόγραμμα.
+    - Χρησιμοποιώντας την μεταβλητή περιβάλλοντος `OMP_SCHEDULE`, μπορείτε να ρυθμίσετε την πολιτική scheduling κατά την εκτέλεση του προγράμματος χωρίς να αλλάξετε τον κώδικα.
+    - Το πρόγραμμα μπορεί να εκτελείται με διαφορετικές πολιτικές scheduling ανάλογα με το περιβάλλον, μπορούμε να το ορίσουμε με: `export OMP_SCHEDULE = "static,4";`
+
+## Μοντέλο Μνήμης στο OpenMP
+- **Coherence**: Συνεπής κατάσταση μεταξύ αντιγραφών μίας διέυθυνσης μνήμης.
+    
+- **Consistency**: Καθορίζει τη σειρά με την οποία γίνονται εγγραφές στη μνήμη
+- **Weak Consistency**: Εγγυήσεις μόνο σε σημεία συγχρονισμού
+

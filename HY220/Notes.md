@@ -1,0 +1,182 @@
+# Εργαστήριο Ψηφιακών Κυκλωμάτων
+
+## Καλήτερη οργάνωση κώδικα:
+- Προσαρμοσμένοι τύποι `typedef`: 
+  - Επιτρέπουν τη δημιουργία νέων ονομάτων τύπω (aliases) για υπάρχοντες τύπους ή τύπους που ορίζοντας απο τον σχεδιαστή
+  - Βελτιώνουν την αναγνωσιμότητα του κώδικα και διευκολήνουν τις αλλαγές ή προσαρμογές των τύπων αργότερα, συγκεκριμμένα τα πλεονεκτήματα είναι:
+    - Βελτιωμένη Αναγνωσιμότητα
+    - Απλόποίηση Δηλώσεων
+    - Ευκολότερες αλλαγές - προσαρμογές
+    - Επαναχρησιμοποίηση κώδικα
+  ``` sv
+    typedef logic [7:0] byte_t;
+    typedef integer count_t;
+    typedef struct {
+      logic valid;
+      logic [31:0] data;
+    } data_payload_d;
+  ```
+- Απαρισθμήσεις `enum`:
+  - Ορίζει έναν τύπο που μπορεί να παίρνει έν συγκεκριμμένο πεδίο τιμών και ορίζει ονόματα για καθεμία απο αυτές τις τιμές
+  - Είναι χρήσιμο σε αναπαράσταση καταστάσεων σε SFM, τύπους εντολών ή σε οποιαδήποτε μεταβλητή πρέπει να δεχτεί ένα περιορισμένο αριθμό απο πιθανές τιμές
+  - Απο deffault το πρώτο όνομα παίρνει την τιμή 0, το δέυτερο 1 κτλ. Μπορούμε επίσης να ορίσουμε ρητά τις τιμές για κάθε όνομα
+  ``` sv
+  typedef enum {
+    value1, // 0
+    value2, // 1
+    value3, // 2
+    ... 
+    valueN  // N-1
+  } enum_name_e;
+  ```
+- Δομές `struct`:
+  - Επιτρέπει την δημιουργία γκρουπ "σχετικών" μεταβλητών/σημάτων που έχουν διαφορετικόυς τύπους, χρησιμοποιώντας ένα όνομα
+  - Είναι χρήσιμο για την αναπαράσταση σχετικών κομματιών ποληροφορίας - δεδομένων, όπως τα πεδία ετνολών ή πακέτων ή για παραμετροποίηση των modules
+  ``` sv
+  typedef struct {
+    logic [7:0] red;
+    logic [7:0] green;
+    logic [7:0] blue;
+  } pixel_t;
+  ```
+- Structs: **Packed** vs **Unpacked**
+  - Τα structs στην SystemVerilog είναι unpacked από deffault
+    - Unpacked σημαίνει ότι ο compiler έχει ευελιξία στο πώς θα τοποθετήσει τα πεδία στη μνήμη και πιθανός να προσθέσει padding για ευθυγράμμιση - alignemnt
+  - Μπορούμε να χρησιμοποιήσουμε το `packed` keyword για να ζητήσουμε τα πεδία να τοποθετηθούν συνεχόμενα στην μνήμη και χωρίς padding
+  - Αυτό χρησιμοποιείται συχνά όταν τα structs πρέπει να απεικονιστούν απευθείας ενα hardware interface ή πρέπει να έχουν ένα συγκεκριμμένο memmory layout
+  - **Υποχρεωτική χρήση struct packed για συνθέσιμο κώδικα**
+- Structs σε πόρτες των modules
+  - Η χρήση structs για τις πόρτες των modules βελτιώνει τν οργάνωση και την αναγνωσιμότητα των διεπαφών των modules. Ειδικά για γκρουπ απο "σχετικά" σήματα
+    - Αντι για ξεχωριστές πόρτες, μπορούμε να ομαδοποιούμε τα σήματα σε ένα struct
+  ``` sv
+  typedef struct packed {
+    logic [7:0] address;
+    logic [7:0] data;
+    logic read_enable;
+    logic write_enable;
+  } bus_interface_t;
+
+  module memory_controller (
+      input logic             clk,
+      input logic             rst_n,
+      input bus_interface_t   req_if,
+      output bus_interface_t  tgt_if
+    );
+    // Internal logic using
+    // req_if.address, req_if.data, etc.
+    // also do full assignment between structs
+    assign tgt_if = req_if;
+  endmodule
+  ```
+- Πίνακες **Unpacked**
+  - Κάθε πίνακας unpacked είναι μία συλλογή στοιχείων του ίδιου τύπου δεδομένων. Κάθε στοιχέια μπορεί να προσπελαστεί με ένα δείκτη (index)
+  - Σύνταξη:
+  ``` sv
+    data_type array_name [dimension1] [dimension2] ... ;
+  ```
+  - Χρήση:
+  ``` sv
+    logic [7:0] byte_array [11:0];  // Unpacked Array of 12 bytes
+    integer count [10];             // Unpacked Array of 10 integers
+  ```
+- Πίνακες **Unpacked**
+  - Ένας πίνακας αναπιστά μια συνεχόμενη ακολουθία απο bits
+  - Χρησιμοποιείται συχνά για την μοντελοποίηση σημάτων και μνήμης όπου η σειρά των bits και η "συνέχεια" είναι σημαντικές
+  - Σύνταξη:
+  ``` sv
+    data_type [msb:lsb] [dimension1] [dimension2] ... array_name;
+  ```
+  - Χρήση:
+  ``` sv
+    logic [3:0][4:0] nibble_array; // Packed Array of 5 4-bit values
+  ```
+| Χαρακτηριστικό     | Packed   | Unpacked  |
+|:---------:|:--------:|:---------:|
+| Χώρος        | Συνεχόμενη ακολουθία από bits | Τα στοιχεία αποθηκέυονται ξεχωριστά στην μνήμη |
+| Δήλωση        | `data_type [packed_dims] array_name` | `data_type array_name [dims]`        |
+| Χρήση        | Μοντελοποίηση σημάτων, μνημών και συέλικτος χειρισμός των bits | Συλλογή δεδομένων, όπως οι κλάσσικοί software πίνακες |
+- Packages 
+  - Παρέχουν ένα μηχανισμό να ενθυλακώνουμε και να μοιραζόμαστε δηλώσεις σε όλη την ιεραρχία ενός σχεδίου
+    - Βοηθάνε στην επαναχρησιμοποίηση και αποφυγή διπλών δυλώσεων και διπλότυπων ονομάτωνA
+  - Σύνταξη:
+  ``` sv
+  package package_name;
+    // Declarations (typedefs, functions, tasks, etc)
+  endpackage
+  ```
+  - Παράδειγμα:
+  ``` sv
+  package common_types_pkg;
+    typedef enum logic [1:0] {
+      IDLE,
+      READ,
+      WRITE,
+      ERROR
+    } state_e;
+    
+    typedef struct packed {
+      logic [7:0] address;
+      logic [7:0] data;
+    } bus_transaction_t;
+    
+    function void print_transaction(input bus_transaction_t trans);
+      $display("Address: %h, Data: %h", trans.address, trans.data);
+    endfunction 
+  endpackage
+  ```
+  - Χρήση:
+  ``` sv
+  import package_name::*;         // Import all items from the package
+  import package_name::item_name; // Import a specific item
+  ```
+  ``` sv
+  module my_module;
+    import common_types_pkg::*; // Import everything from the package
+    state_e current_state;
+    bus_transaction_t my_transaction;
+    
+    initial begin
+      current_state = READ;
+      my_transaction.address = 8'h10;
+      my_transaction.data = 8'hAA;
+      $display("Current state: %s", current_state.name());
+      print_transaction(my_transaction); // Calling the function from the package
+    end
+  endmodule
+  ```
+- Χρήσιμες συναρτήσεις 
+  - Υπάρουνχ πολλές χρήσιμες build-in συναρτήσεις της SystemVerilog (ξεκινούν με `$`). 
+    - `$bits(expression)`
+      - Επιστρέφει τον αριθμό των bits μιας έκφρασης
+      - Χρήσιμη για παραμετρικό και ευέλικρο κώδικα RTL
+      - Πολύ χρήσιμο για τύπους ορισμένουν απο τον χρήστη (typedef) ή για τον προσδιορισμό του μεγέθους δυναμικά
+    - `$clog2(integer_expr)`
+      - Υπολογίζει το ταβάνι (ceil) του λογαρίθμου με βάση 2 για την ακέραια έκφραση
+      - Χρησιμοποιείται συχνά για να υπολογίσει τον ελάχιστο αριθμό απο bits που χρειάζονται για να αναπαραστηθεί ένα συγκεκριμμένο έυρος τιμών ή για το "πλάτος" των διευθύνσεων μιας μνήμης με συγκεκριμμένο "ύψος/αριθμό λέξεων"
+
+- FSMs
+  - Οι μηχανές πεπερασμένων καταστάσεων Finite State Machines 
+    - πιο αφηριμένος τρόπος νε εξετάζουμε ακολουθιακά κυκλώματα
+    - είσοδοι - έξοδοι, τρέχουσα κατάσταση επόμενη κατάσταση
+    - σε κάθε ακμή του ρολογιού συνδυαστική λογική παράγει τις εξόδους και την επόμενη κατάσταση σαν συναρτήσεις των εισόδων και της τρέχουσας κατάστασης
+  - Χαρακτηρισικά
+    - Η επομενη κατάσταση είναι συνάρτηση της τρέχουσας κατάστασης και των εισόδων
+    - `Moore Machine`: Οι εξόδοι είναι συναρτήση της κατάστασης
+    - `Mealy Machine`: Οι εξόδοι είναι συνάρτηση της κατάστασης και των εισόδων
+  - Βήματα Σχεδίασης:
+    1. Περιγραφή λειτουργίας του κυκλώματος (functional specification)
+    2. Διάγραμμα μετάβασης καταστάσεων (state transition diagram)
+    3. Πίνακας καταστάσεων και μεταβάσεων με συμβολικά ονόματα (symbolic state transition table)
+    4. Κωδικοποίηση καταστάσεων (state encoding)
+    5. Εξαγωγή λογικών συναρτήσεων
+    6. Διάγραμμα κυκλώματος:
+      - FFs για την κατάσταση
+      - ΣΛ για την επόμενη κατάσταση και τις εξόδους
+  - Αναπαράσταση FSM 
+    - **Καταστάσεις**: όλες οι πιθανές τιμές στα ακολουθιακά στοιχεία μνήμης (FFs)
+    - **Μεταβάσεις**: αλλαγή κατάστασης
+    - Αλλαγή της κατάστασης με το ρολόι αφού ελέγχει φόρτωση τιμής στα στοιχεία μνήμης (FFs)
+    - **Ακολουθιακή λογική**:
+      - Ακολουθια μέσω μίας σειράς καταστάσεων
+      - Βασίζεται στην ακολουθία των τιμών στις εισόδους
+

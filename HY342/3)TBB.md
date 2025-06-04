@@ -306,30 +306,242 @@ if (q.empty()) {
 Νέο API: `pop_if_present()`
 
 ### Concurrent Queue
-Χαρακτηριστικά:
-- FIFO ουρά, παράλληλα προσθήκη και αφαίρεση στοιχείων
-- Μεθόδοι:
-    - `push(const &T)`: προσθέτει αντικείμενο
-    - `pop(T&)`: blocking
-    - `pop_if_present(T&)`: non-blocking
-    - `size()`: επιστρέφει signed ακέραιο (αρνητικό σημαίνει ότι threads περιμένουν pop)
+Χαρακτηριστικά: FIFO ουρά, παράλληλα προσθήκη και αφαίρεση στοιχείων
+Μεθόδοι:
+- `push(const &T)`: προσθέτει αντικείμενο
+- `pop(T&)`: blocking
+- `pop_if_present(T&)`: non-blocking
+- `size()`: επιστρέφει signed ακέραιο (αρνητικό σημαίνει ότι threads περιμένουν pop)
+
+Σωστή χρήση:
+- Κάθε queue είναι ουσιαστικά ένα bottleneck
+- Κάθε thread που προσπαθεί να πάρει μία τιμή μπορεί να χρειαστεί να περιμένει μέχρι να υπάρξει μία τιμή 
+- Άν ένα thread εισάγει μια τιμή και ένα άλλο thread την βγάλει, τα δεδομένα πρέπει να μεταφερθούθν στον πυρήνα όπου εκτελείται το 2ο
+- Συνήθως τα queues αφήνουν τα δεδομένα να φύγουν από την cache πριν χρησιμοποιηθούν (από ένα μέγεθος και πάνω)
+
 Παράδειγμα:
 ```cpp
 #include <tbb/concurrent_queue.h>
 using namespace tbb;
 
 int main() {
-    concurrent_queue<int> queue;
-    for (int i = 0; i < 10; i++)
-        queue.push(i);
+  concurrent_queue<int> queue;
+  for (int i = 0; i < 10; i++)
+    queue.push(i);
 
-    int j;
-    while (!queue.empty()) {
-        queue.pop(j);
-        std::cout << "From queue: " << j << std::endl;
-    }
-    return 0;
+  int j;
+  while (!queue.empty()) {
+    queue.pop(j);
+    std::cout << "From queue: " << j << std::endl;
+  }
+  return 0;
+}
+```
+### Concurrent Vector
+Χαρακτηριστικά: Παρόμοιο με `std::vector`, αλλα υποστηρίζει παράλληλη προσπέλαση και επέκταση. Δεν μετακινεί στοιχεία μέχρι να διαγραφούν.
+Μεθόδοι:
+- `grow_by(size_type)`: προσθέτει Χ στοιχεία
+- `grow_to_at_least(size_type)`: εξασφαλίζει τουλάχιστον Χ θέσεις
+
+Παράδειγμα:
+```cpp
+void append(concurrent_vector<char>& V, const char* str) {
+  size_t n = strlen(str) + 1;
+  memcpy(&V[V.grow_by(n)], str, n + 1);
 }
 ```
 
+### Concurent Hash Map
+Χαρακτηριστικά: 
+- Αντιστοίχιση τύπου `Key -> T`
+- Παρέχει ταυτόχρονη πρόσβαση σε `count()`, `find()`, `insert()`, `erase()`
+- Χρήση smart pointer (`accessor`, `const_accessor`) για ασφαλή πρόσβαση στα στοιχεία
+  - `accessor`: read-write
+  - `const_accessor`: read only
+
+Παράδειγμα - Εισαγωγή:
+```cpp
+typedef concurrent_hash_map<string, int> myMap;
+myMap table;
+string newstring;
+int place = 0;
+
+while (getNextString(&newstring)) {
+  myMap::accessor a;
+  if (table.insert(a, newstring)) {
+    a->second = ++place; // εισαγωγή νέου string
+  }
+}
+```
+
+Παράδειγμα - Ανάγνωση:
+```cpp
+myMap table;
+string s1, s2;
+int p1, p2;
+
+myMap::const_accessor a, b;
+if (table.find(a, s1) && table.find(b, s2)) {
+  p1 = a->second;
+  p2 = b->second;
+  if (p1 < p2)
+    std::cout << s1 << " seen before " << s2 << std::endl;
+  else
+    std::cout << s2 << " seen before " << s1 << std::endl;
+} else {
+  std::cout << "One or both strings not seen before" << std::endl;
+}
+```
+
+### Scalable Memory Allocator
+Πρόβλημα με malloc:
+Η κλασσική `malloc`/`new` δεν είναι σχεδιασμένη για παράλληλη χρήση:
+- Μόνο ένα thread μπορεί να εκτελέσει `malloc` ανα πάσα στιγμή
+- Εμφάνιση **false sharing**. διαφορετικά threads γράφουν σε ίδια cache lines -> επιβράδυνση λόγω ping-pong στην cache
+
+Λύσεις TBB
+Η TBB παρέχει δύο εναλακτικούς allocators:
+- `scalable_allocator`: κλιμακωσιμός, χωρίς προστασία απο false sharing
+- `cache_aligned_allocators`: και κλιμακώσιμος και προστατευμένος απο false sharing (ευθυγράμμιση με cache lines)
+
+### API - scalable_allocator
+Παραδείγματα:
+```cpp
+void* p = scalable_malloc(size);    // allocate
+scalable_free(p);                   // free
+p = scalable_realloc(p, new_size);  // resize
+```
+STL allocator interface:
+```cpp
+template<typename T> class scalable_allocator;
+
+T* allocate(size_type n);
+void deallocate(T* p, size_t n);
+void construct(T* p, const T& val);
+void destroy(T* p);
+```
+Παράδειγμα χρήσης
+```cpp
+#include <tbb/scalable_allocator.h>
+typedef char _Elem;
+typedef std::basic_string<_Elem,
+  std::char_traits<_Elem>,
+  tbb::scalable_allocator<_Elem>> MyString;
+
+int* p = tbb::scalable_allocator<int>().allocate(24);
+
+MyString str1 = "qwertyuiopasdfghjkl";
+MyString str2 = "asdfghjklasdfghjkl";
+```
+- Η `MyString` είναι string τύπου STL αλλά με scalable allocator
+- Η `allocate()` δεσμέυει μνήμη για πίνακα `int` με βελτιστοποιημένη διαχείριση
+
+### Flow Graph
+
+Μοντέλο Reactive Programming: tasks εφαρμόζονται ως κόμβοι σε ένα γράφημα ροής δεδομένων
+Χρήσιμο για:
+- Complex task graphs
+- Event-driven συστήματα
+- Actor-based υλοποιήσεις (κόμβοι ως "actors")
+Οι κόμβοι ανταλλάσουν μηνύματα, μπορούν να εκτελούνται παράλληλα ή σειριακά ανάλογα με τη ροή
+#### Είδη Κόμβων - Function & Buffering
+Function Nodes
+- `source_node`: παράγει τιμές
+- `function_node`: εφαρμόζει συνάρτηση σε είσοδο και επιστρέφει έξοδο
+- `multifunction_node`: επιστρέφει πολλαπλές εξόδους
+- `continue_node`: περιμένει είσοδο από όλους πριν παράγει έξοδο
+Buffering Nodes
+- `buffer_node`: buffer χωρίς σειρά
+- `queue_node`: FIFO σειρά
+- `priority_queue_node`: σεριά με προτεραιότητες
+- `sequencer_node`: ταξινόμηση με custom λογική
+
+Flow Graph - Παράδειγμα
+```cpp
+#include <iostream>
+#include <tbb/flow_graph.h>
+using namespace tbb::flow;
+
+int main() {
+  graph g;
+
+  continue_node<continue_msg> h(g, [](const continue_msg&) {
+    std::cout << "Hello ";
+  });
+
+  continue_node<continue_msg> w(g, [](const continue_msg&) {
+    std::cout << "Flow Graph World\n";
+  });
+
+  make_edge(h, w);           // h → w
+  h.try_put(continue_msg()); // ενεργοποίηση h
+  g.wait_for_all();          // αναμονή για όλα τα tasks
+}
+```
+
+### Συγχρονισμός στην TBB
+Σε παράλληλα προγράμματα, πολλές φορές tasks μοιράζονται δεδομένα, οπότε απαιτείται συγχρονισμός.
+- αποφυγή data races
+- Ασφάλεια προσπέλασης
+Η TBB προσφέρει υψηλού επιπέδου εργαλέια για συγχρονισμό βασισμένα σε hardware primitives
+
+### Primitives Συγχρονισμού
+Scoped Locks
+- Βασίζονται στο RAII pattern: το lock αποκτάται στον constructor και ελευθερώνεται στον destructor
+- Αφαλές και σε περίπτωση εξαιρέσεων
+
+Παραδείγμα:
+```cpp
+{
+  spin_mutex::scoped_lock lock(my_mutex);
+  // χρήση shared δεδομένων
+} // αυτόματα unlock στο τέλος του scope
+```
+
+άλλες primitive τεχνικές
+- Spin-locks, queue-locks
+- Reader/Writer locks
+- Ελαχιστοποίηση χρόνου κατοχής του lock -> λιγότερο congestion
+
+### `atomic<T>`
+Χρήση
+Τύπος TBB για ασφαλείς atomic μεταβλητές, υποστηρίζει:
+- int/pointer types 8-64 bits
+- Αναθέσεις, αναγνώσεις και atomic operations
+
+Παρααδείγματα:
+```cpp
+atomic<int> i;
+int z = i.fetch_and_add(2);
+```
+
+Κύριες μεθόδοι
+- `fetch_and_store(y)`: επιστρέφει παλία τιμή, ορίζει νέα
+- `fetch_and_add(y)`: επιστρέφει παλιά τιμή, προσθέτει y
+- `compare_and_swap(y,p)`: αν η τιμή είναι p, ορίζει σε y
+
+### TBB Mutex
+API βασισμένο σε C++
+- `M`: τύπος mutex (π.χ `spin_mutex`,`queueing_mutex`)
+- `M::scoped_lock`: κλάση για scoped lock
+
+Χρήση
+```cpp
+M my_mutex;
+{
+  M::scoped_lock lock(my_mutex); // απόκτηση lock
+  // critical section
+}
+// destructor του lock → release
+```
+
+Είδη Mutex:
+|Τύπος | Ιδιότητες | Χρήση |
+|------|-----------|-------|
+|`spin_mutex` | Non-reentant, unfairn, spin | Πολύ γρήγορος για μικρά critical sections |
+|`queueing_mutex` | Non-reentant, fair, spin | Για fairnerss και scalability |
+|`mutex` | OS-based, fair, reentant | Γενική χρήση |
+|`recursive_mutex` | Reentant, OS-based | Αναδρομικός κώδικας | 
+|`spin_rw_mutex` | Reader-writer, unfair | Για πολλές αναγώσεις |
+|`queueing_rw_mutex` | Reader-writer, fair | Ανάγκη για κλιμακωσιμότητα |
 

@@ -1,17 +1,17 @@
-## HY342 - Παράλληλος Προγραμματισμός
-### Java Threads
+# HY342 - Παράλληλος Προγραμματισμός
+## Java Threads
 
-### Τί είναι Thread
+## Τί είναι Thread
 Ένα thread είναι μία μονάδα εκτέλεσης μέσα σε μία διεργασία, κάθε πρόγραμμα έχει τουλάχιστον ένα thread, το `main()`
 Υλοποίηση:
 - Κάθε thread έχει το δικό του *Program Counter (PC)* και *stack*
 - Όλα τα threads μοιράζονται το ίδιο heap και static μνήμη
 
-### Υλοποίηση των Thread
+## Υλοποίηση των Thread
 - Όσο εκτελείται ένα thread, ο *PC* και ο *stack pointer* του αποθυκέυονται στη μνήμη
 - Όταν εκτελείται, αποθηκεύνται σε *hardware registers* ενός πυρήνα
 
-### Πλεονεκτήματα και Μειωνεκτήματα των Threads
+## Πλεονεκτήματα και Μειωνεκτήματα των Threads
 Πλεονεκτήματα:
 - Πράλληλη εκτέλεση σε multi-core επεξεργαστές
 - Συνδυασμός I/O και υπολογισμών
@@ -20,25 +20,25 @@
 - Αυξημένη πολυπλοκότητα (προβλήματα όπως safety, liveness, composability)
 - Oversubscription: πολλά threads σε λίγους πόρους προκαλούν συμφόρηση
 
-### Thread Programming Model
+## Thread Programming Model
 - Πολλές γλώσσες τα υποστηρίζουν
 - Στην Java είναι μέρος του language specification
 - Η Java διαθέτει τυπικά ορισμένο Memory Model
 
-### Java Threads
+## Java Threads
 - Η Java ξεκινάει με ένα thread: το `main()`
 - Για να δημιουργήσουμε νέα threads
   - **Άμεσα**: με χρήση της κλάσης `Thread`
   - **Έμμεσα**: από libraries (RMI, Swing, AWT)
 
-### Java Threads ως Objects
+## Java Threads ως Objects
 - Τα threads είναι *αντικείμενα* της κλάσης `Thread` ή υποκλάση της
 - Για να ξεκινήσει ένα νέο thread:
   - Δημιουργούμε αντικείμενο `Thread`
   - Κλήση της `start()`: ξεκινά το thread και εκτελεί την `run()` ασύγχρονα
   - Το thread τερματίζει όταν τελειώσει η `run()`
 
-#### Παράδειγμα: Alarms
+### Παράδειγμα: Alarms
 - Ο κώδικας εισάγει χρόνο `t` και μήνυμα `m`.
 - Ο κώδικας χρησιμοποιεί `Thread.sleep(t*1000)` για να περιμένει και μετά τυπώνει το μήνυμα
 
@@ -103,7 +103,7 @@ while (true) {
 // ...
 ```
 
-### Εναλακτική: Runnable Interface
+## Εναλακτική: Runnable Interface
 - Η κληρονομικότητα από `Thread` περιορίζει το class hierarchy
 - Αντί για `extends Thread`, μπορούμε να υλοποιήσουμε το interface `Runnable`
 - Η κλάση υλοποιεί τη μέθοδο `void run()`
@@ -113,7 +113,7 @@ Thread t = new Thread(new AlarmRunnable(msg,timeout));
 t.start();
 ```
 
-#### Παράδειγμα
+### Παράδειγμα
 ```java
 public class AlarmRunnable impements Runnable {
   private String msg = null;
@@ -150,12 +150,12 @@ while (true) {
 // ...
 ```
 
-### Πέρασμα παραμέτρων
+## Πέρασμα παραμέτρων
 - Η `run()` δεν δέχεται παραμέτρους
 - Τα δεδομένα μεταβιβάζονται μέσω `private` fields του αντικειμένου
 - Είτε στην υποκλάση `Thread` είτε στο `Runnable`
 
-### Concurency
+## Concurency
 - **Concurent** πρόγραμμα: Πολλά thread ενεργά τατόχρονα ταυτόχρονα
 - Εκτελείται σε:
   - Ένα CPU με context-switching
@@ -163,14 +163,14 @@ while (true) {
 - Ο Thread Sceduler αποφασίζει πότε γίνεται εναλλαγή
 - Το JVM επιλέγει πολική scheduling
 
-### Concurrency και Κοινή Μνήμη
+## Concurrency και Κοινή Μνήμη
 - Το concurrency γίνεται πολύπλοκο όταν threads μοιράζονται δεδομένα
 - Η επικοινωνία γίνεται μέσω shared heap αντικειμένων
 - Interleavings των reads/writes είναι μη-ντετερμινιστικά
   - Το hardware, compiler και scheduler αλλάζουν τη σειρά
 - Προσοχή σε race conditions και memmory consistency errors
 
-#### Παράδειγμα Data Race:
+### Παράδειγμα Data Race:
 ``` java
 public class Example extends Thread {
   private static int counter = 0;
@@ -188,13 +188,13 @@ public class Example extends Thread {
 ```
 Τα threads μπορεί να γράψουν/διαβάσουν τον `counter` με λάθος σειρά - πιθανή απώλεια updates
 
-### Συγχρονισμός (Synchronization)
+## Συγχρονισμός (Synchronization)
 - Χρησιμοποιείται για τον έλεγχο της σειράς εκτέλεσης μεταξύ threads
 - Στόχος: Αποκλείονται λάθος interleavings, ώστε το πρόγραμμα να παραμένει σωστό
 - Οι μηχανισμοί συγχρονισμού περιορίζουν το χώρο των δυνατών εκτελέσεων
 - Η Java προσφέρει πολλούς τέτοιυς μηχανισμούς (π.χ locks, synchronized)
 
-### Java Locks
+## Java Locks
 - Interface `Lock`: έχει μεθόδους `lock()` και `unlock()`
 ```java
 interface Lock {
@@ -210,7 +210,7 @@ class ReentrantLock implements Lock { ... }
   - Reentrant: το ίδιο thread μπορεί να πάρει το ίδιο lock πολλές φορές
   - Πρέπει να γίνει unlock τόσες φορές όσες έγινε lock
 
-#### Παράδειγμα με Lock
+### Παράδειγμα με Lock
 ```java
 static Lock lock = new ReentantLock();
 static int counter = 0;
@@ -224,7 +224,7 @@ public void run() {
 ```
 Αποφυγή data races μέσω αποκλιεσιτκής πρόσβασης με lock
 
-### Προσοχή σε διαφορετικά Locks
+## Προσοχή σε διαφορετικά Locks
 - Αν δυο threads χρησιμοποιούν διαφορετικά locks για τα ίδια shared δεδομένα -> race conditions
 ```java
 static lock l = new ReentantLock();
@@ -232,7 +232,7 @@ static lock m = new ReentantLock();
 ```
 - Τα locks δεν συνανεργάζονται μεταξύ τους, κάθε thread προστατέυει μόνο μεμονωμένα accesses
 
-#### Παράδειγμα με Busy Waiting
+### Παράδειγμα με Busy Waiting
 ```java
 static int counter = 0;
 static int x = 0;
@@ -254,7 +254,7 @@ x = 0;
 - Και τα δύο threads μπορεί να "νομίζουν" ότι έχουν το lock -> Data Race
 - Επίσης κάνει σπατάλη CPU -> λέγεται busy waiting
 
-### Deadlock
+## Deadlock
 - Προκύπτει όταν κανένα thread δεν μπορεί να προχωρήσει επιεδή περιμένει κάποιο lock που κατά άλλο thread
 - Παράδειγμα:
 ```java
@@ -278,7 +278,7 @@ l.unlock();
 
 Αν το Thread1 πάρει το l και Thread 2 πάρει το m τότε και τα δύο περιμένουν το άλλο -> deadlock
 
-### Ο γράφρος των Waits (Wait graph)
+## Ο γράφρος των Waits (Wait graph)
 - Αναπαριστά τις σχέσεις μεταξύ threads και locks
 - Κόμβοι: threads & locks
 - Ακμή: `Thread -> Lock`: περιμένει το lock
@@ -286,7 +286,7 @@ l.unlock();
 - Deadlock υπάρχει όταν υπάρχει κύκλος στον γράφο
 - Πολύ δύσκολο στο debug - μπορεί να προκύψει σε άσχετο σημείο εκτέλεσης
 
-#### Παράδειγμα Deadlock λόγο Exception
+### Παράδειγμα Deadlock λόγο Exception
 ```java
 lock l = new ReentantLock();
 
@@ -301,7 +301,7 @@ void f() throws Exception {
 - Αν προκύψει exception πρίν το `unlock()` το lock δεν αποδεσμέυεται
 - Αυτό οδηγέι σε πιθανό deadlock αργότερα
 
-#### Λύση: `finally` Block
+### Λύση: `finally` Block
 ```java
 l.lock();
 try {
@@ -312,7 +312,7 @@ try {
 ```
 - Το `finally` εγγυάται ότι το `unlock()` θα εκτελεστεί πάντα, ακόμα και με `exception` ή `return`
 
-### `synchronized` Blocks
+## `synchronized` Blocks
 - Java construct για αυτόματο lock/unlock
 - Σύνταξη:
 ```java
@@ -323,7 +323,7 @@ synchronized(obj) {
 - Κλειδώνει το lock του αντικειμένου `obj`
 - Το lock αποδεσμέυεται αυτόματα βγαίνοντας από το μπλοκ (ακόμα και με exception)
 
-### Παράδειγμα `synchronized`
+## Παράδειγμα `synchronized`
 ```java
 static Object o = new Object();
 
@@ -341,11 +341,11 @@ void f() {
 Προσοχή: Το αντικείμενο και το lock που του αντιστοιχεί είναι διαφορετικά πράγματα:
 Το ότι το lock ενός αντικειμένου είναι κλειδωμένο δε σταματά άλλα threads απο το να καλέσουν μεθόδους, να έχουν πρόσβαση στα πεδία κτλ.
 
-### Object Locks $\neq$ Objext Access
+## Object Locks $\neq$ Objext Access
 - Το lock ενός αντικειμένου δεν εμποδίζει άλλες προσβάσεις στα πεδία του
 - Το lock αφορά μόνο το synxchronized block, όχι ολόκληρο το object
 
-#### Παράδειγμα: χρήση της `this` για Lock
+### Παράδειγμα: χρήση της `this` για Lock
 ```java
 class C {
   int counter;
@@ -359,7 +359,7 @@ class C {
 - Τα threads συνγχρονίζονται πάνω στο ίδιο αντικείμενο (`this`)
 - Όχι data race, επειδή όλα αποκτούν το ίδιο lock π´ριν προσπελάσουν το counter
 
-#### Παράδειγμα με πολλαπλά αντικείμενα 
+### Παράδειγμα με πολλαπλά αντικείμενα 
 ```java
 C c1 = new C();
 C c2 = new C();
@@ -370,7 +370,7 @@ Thread 2: c2.inc();
 - Δεν υπάρχει Data Race επειδή τα αντικείμενα είναι ξεχωριστά
 - Κάθε thread κλειδώνει το δικό του object -> διαφορετικά locks, διαφορετικά δεδομένα
 
-### Synchronized Methods
+## Synchronized Methods
 - Εναλακτική του `synchronized (this)`
   - Χρησιμοποιεί τη λέξη-κλειδί `synchronized` στη δήλωση της μεθόδου
 - Ισοδύναμο:
@@ -384,7 +384,7 @@ void int() {
 }
 ```
 
-#### Παράδειγμα `synchronized` Method
+### Παράδειγμα `synchronized` Method
 ```java
 class C {
   int counter;
@@ -401,7 +401,7 @@ class C {
 
 - Και οι δύο μεθόδοι συγχρονίζονται πάνω στο ίδιο `this` object -> ασφαλής πρόσβαση στα shared δεδομένα
 
-### Synchronized `static` Methods
+## Synchronized `static` Methods
 - Οι `static synchronized` μεθόδοι κλειδώνουν το lock του class object, όχι ενός instance.
 - Δεν υπάρχει `this`, άρα:
 ```java
@@ -416,7 +416,7 @@ class C {
 }
 ```
 
-### Task Scheduling
+## Task Scheduling
 - Όταν πολλά threads μοιράζονται έναν πυρήνα CPU:
   - Ποιο εκτελείται και πότε αλλάζει βάσει scheduling policy
 - `Thread.yield()`:
@@ -427,7 +427,7 @@ class C {
   - Δνε υποστηρίζονται απο όλα τα JVMS's
 - `yield()` χρήσιμο σε loops για αποφυγή starvation:
 
-### Thread Lifecycle
+## Thread Lifecycle
 Καταστάσεις ενός thread:
 - **New**: δημιοργήθηκε αλλά δεν ξεκίνησε
 - **Runnable**: έτοιμο για εκτέλεση η εκτελείται ήδη
@@ -435,14 +435,14 @@ class C {
 - **Sleeping**: σε πάυση βάσει `sleep()`
 - **Terminated**: τελείωσε
 
-### Ποιο Thread Εκτελείται;
+## Ποιο Thread Εκτελείται;
 - O JVM Scheduler διαλέγει ανάμεσα σε runnable threads
 - Παράγοντες:
   - Threads που ξεμπλοκάραν απο I/O, sleep ή lock
   - Προτεραιότητα (`setPriority(int)`): υψηλότερη = προτιμάται
 - Συνήθως δεν υπάρχει λόγος να τροποποιηθεί η προτεραιτότητα
 
-### Σημαντικές μεθόδοι του Thread
+## Σημαντικές μεθόδοι του Thread
 - `void join() throws InterruptedException`
   - Περιμένει να τελειώσει το Thread
 - `static void yield()`
@@ -452,7 +452,7 @@ class C {
 - `static Thread currentThread()`
   - Επιστρέφει το Thread object του thread που εκτελείται
 
-#### Παράδειγμα: Alarm
+### Παράδειγμα: Alarm
 ```java
 // ...
 
@@ -474,13 +474,13 @@ while (true) {
 // ...
 ```
 
-### Daemon Threads
+## Daemon Threads
 - `setDaemon(true)` ορίζει ότι ένα thread είναι daemon
 - Πρέπει να κληθεί πρίν το `start()`
 - Ένα πρόγραμμα τερματίζει όταν δεν υπάρχουν πια non-daemon threads
 - Daemon threads: π.χ. background εργασίες, timers
 
-### Βασικές Αρχές για Threads
+## Βασικές Αρχές για Threads
 - Πολλά threads μπορεί:
   - Να εκτελούνται ταυτόχρονα (σε πολλούς πυρήνες)
   - Ή να εναλλάσσονται σε έναν επεξεργαστή
@@ -491,13 +491,13 @@ while (true) {
 - Προσοχή σε deadlocks
   - Αποφυγή: κάθε thread να κρατά ένα μόνο lock κάθε στιγμή
 
-### Producer - Consumer Design Pattern
+## Producer - Consumer Design Pattern
 - Παράδειγμα επικοινωνίας δύο threads μέσω shared buffer
   - **Producer**: προσθέτει δεδομένα στον buffer
   - **Consumer**: αφαιρεί δεδομένα
 - Υλοποίηση με condition variables
 
-### Conditions (Java 5+)
+## Conditions (Java 5+)
 ```java
 Lock lock = new ReentantLock();
 Condition cond = lock.newCondition();
@@ -510,7 +510,7 @@ Condition cond = lock.newCondition();
   - Ξυπνά όλα τα threads που περιμένουν στο condition
   - Πρέπει να καλεστεί ενώ το lock είναι acquired
 
-### Παράδειγμα Producer - Consumer
+## Παράδειγμα Producer - Consumer
 ```java
 Lock lock = new ReentrantLock();
 Condition ready = lock.newCondition();
@@ -540,13 +540,13 @@ Object consume() {
 ```
 - Ορθή χρήση `await()` και `signalAll()` για συγχρονισμό μεταξύ threads
 
-### Προτιμήστε αυτό το Pattern
+## Προτιμήστε αυτό το Pattern
 - Είναι ορθή και ασφαλής λύση για synchronization
 - Πρόβλημα με εναλλακτικές υλοποιήσεις είναι:
   - Δύσκολα στον εντοπισμό (subtle bugs)
   - Συχνά λανθασμένες (π.χ. double-cheked locking)
 
-### Παραδείγματα λάθος κώδικα:
+## Παραδείγματα λάθος κώδικα:
 1. Deadlock
   ```java
   lock.lock()
@@ -575,7 +575,7 @@ Object consume() {
     - Το `await()` πρέπει να είναι σε `while`, όχι `if`
     - Δεν δουλέυει σωστά υπάρχουν πολλαπλοί producer/consumers
 
-### Condition Interface (Java 5+)
+## Condition Interface (Java 5+)
 ```java
 interface Condition {
   void await();
@@ -589,14 +589,14 @@ interface Condition {
 - `signal()` -> ξυπνάει **ένα** thread
 - `signalAll()` -> ξυπνάει όλα τα threads
 
-### Χρήση `await()` - `signalAll()`
+## Χρήση `await()` - `signalAll()`
 - Το `await()` πρέπει να είναι πάντα μέσα σε loop, όχι `if`
 - Γιατί 
   - Υπάρχουν spurious wakeups (λανθασμένες αφυπνίσεις)
   - Μπορεί να έχουν ξυπνήσει πολλά threads και μόνο ένα να πάρει το lock
 - Αποφέυγουμε να κρατάμε άλλα locks κατά τη διάρκεια του `await()`
 
-### Blocking Queues - Παράδειγμα Abstraction
+## Blocking Queues - Παράδειγμα Abstraction
 Το Producer-Consumer pattern μπορεί να υλοποιηθεί πιο καθαρά με BlockingQueue
 ```java
 interface Queue<E> extends Collection<E> {
@@ -609,7 +609,7 @@ interface Queue<E> extends Collection<E> {
   - `LinkedBlockingQueue` (μπορεί να είναι άπειρη)
   - `ArrayBlockingQueue` (με σταθερό μέγεθος)
 
-### Wait & NotifyAll (Java < 1.5)
+## Wait & NotifyAll (Java < 1.5)
 - Παλιά προσέγγιση συγχρονισμού:
   - Χρησιμοποιεί `synchronized` blocks
   - Και τις μεθόδους `wait()`, `notify()`, `notifyAll()`
@@ -620,7 +620,7 @@ interface Queue<E> extends Collection<E> {
 `notifyAll()`
 - Ξυπνά όλα τα threads που περιμένουν στο wait set του αντικειμένου
 
-### Παράδειγμα Producer-Consumer με `wait/notifyAll`
+## Παράδειγμα Producer-Consumer με `wait/notifyAll`
 ```java
 public class ProducerConsumer {
   private boolean valueReady = false;
@@ -647,7 +647,7 @@ public class ProducerConsumer {
   - `wait()` αντί `await()`
   - `notifyAll()` αντί `signalAll()`
 
-### InteruptedException
+## InteruptedException
 - Εξαίρεση που πετιέται όταν ένα μπλοκαρισμένο thread διακοπεί 
 - Πιθανές περιπτώσεις:
   - `wait()`
@@ -657,14 +657,14 @@ public class ProducerConsumer {
   - `lockInterruptibly()`
 - Αν το interrupt flag έχει ενεργοποιηθεί, η επόμενη από αυτές τις μεθόδους θα ρίξει `InterruptedException`
 
-### Μεδόδοι και Interfaces με InterruptedException
+## Μεδόδοι και Interfaces με InterruptedException
 - `Object.wait()`
 - `Condition.await()`
 - `Lock.lockInterruptibly()`
 - `Thread.sleep()`
 - `Thread.join()`
 
-### Isolation (Απομόνωση)
+## Isolation (Απομόνωση)
 - Ιδέα: Αν ένα αντικείμενο δεν είναι κοινόχρηστο (shared) δεν χρειάζεται synchronization
 - Ισχύει για:
   - Τοπικές μεταβλητές (`local variables`)
@@ -672,14 +672,14 @@ public class ProducerConsumer {
 - Java παρέχει:
   - `ThreadLocal` -> Για ξεχωριστό αντίγραφο μιας μεταβλητής ανα thread
 
-### Thread Local Data
+## Thread Local Data
 - Κατάλληλο όταν κάθε thread πρέπει να έχει δική του έκδοση κάποιου πόρου (π.χ. direction, settings)
 - Αντί να περνάμε δεδομένα με ορίσματα ή πεδία:
   - Χρησιμοποιούμε `ThreadLocal`
   - Δεν χρειάζεται Synchronization
   - Μειώνει πολυπλοκότητα
 
-#### Παράδειγμα: `ThreadLocal`
+### Παράδειγμα: `ThreadLocal`
 ```java
 public class WebServer {
   static final ThreadLocal documentRoot = new ThreadLocal();
@@ -695,7 +695,7 @@ public class WebServer {
 }
 ```
 
-#### Πότε να χρησιμοποιώ `ThreadLocal`
+### Πότε να χρησιμοποιώ `ThreadLocal`
 - Όταν η μεταβλητή αφορά δραστηριότητα (activity), όχι αντικείμενο
 - Παραδείγματα:
   - Timeout per thread
@@ -705,7 +705,7 @@ public class WebServer {
   - Αποφυγή synchronization
   - Εσωτερικά λειτουργίες του JVM
 
-### Stateless Objects
+## Stateless Objects
 ```java
 class StatelessAdder {
   int addOne(int i) { return i + 1; }
@@ -718,7 +718,7 @@ class StatelessAdder {
   - Δεν χρειάζονται locks
   - Πολλαπλά threads μπορούν να τα καλούν ασφαλώς ταυτόχρονα
 
-### Immutable Objects
+## Immutable Objects
 ```java
 class ImmutableAdder {
   private final int offset;
@@ -733,7 +733,7 @@ class ImmutableAdder {
   - Κατάλληλο για shared user
 - Συχνά παραδείγματα: `String`, `Integer`, `Boolean` κλπ
 
-### Containment (Περιορισμός Πρόσβασης)
+## Containment (Περιορισμός Πρόσβασης)
 - Σκοπός: περιορίζω την πρόσβασιμότητα στα mutable δεδομένα
 - Δημιουργεί "νησίδες" αντικειμένων με ασφαλή πρόσβαση
 - Οι εξωτερικές κλάσεις:
@@ -742,7 +742,7 @@ class ImmutableAdder {
 - Οι εσωτερικές κλάσσεις:
   - Εκτελούν τον κώδικα τους χωρίς συγχρονισμό, γιατί δεν υπάρχει επικίνδυνη πρόσβαση
 
-#### Παράδειγμα Containment (1)
+### Παράδειγμα Containment (1)
 ```java
 class Statistic {
   public long request;
@@ -753,7 +753,7 @@ class Statistic {
 - Δεν πρέπει να κοινοποιούνται εκτός
 Μπορεί να είνα εσωτερικό πεδίο μιας άλλης κλάσης (όπως WebServer) και να προστατεύεται εκεί
 
-#### Παράδειγμα Containment (2)
+### Παράδειγμα Containment (2)
 ```java
 class WebServer {
   private final Statistics stats = new Statistics(0,0.0);
@@ -773,7 +773,7 @@ class WebServer {
 - Δεν επιστρέφει το `stats` απευθείας -> προστασία μέσω αντιγραφής
 - Η ενημέρωση γίνεται εντός synchronized -> ασφαλής τροποποίηση
 
-### Hierarchical Containment Locking
+## Hierarchical Containment Locking
 - Χρήσιμο όταν:
   - Ένα αντικείμενο περιέχει άλλα, τα οποία δεν είναι πλήρως κρυφά από τους πελάτες
 - Όλα τα επιμέρους αντικείμενα χρησιμοποιούν το ίδιο lock του "ιδιοκτήτη"
@@ -782,7 +782,7 @@ class WebServer {
   - **Internal locking**: Το αντικείμενο ξέρει το lock του κατόχου του
   - **External locking**: Ο client κρατά το σωστό lock
 
-#### Internal Containment Locking (1)
+### Internal Containment Locking (1)
 ```java
 class Part {
   protected Container owner_;
@@ -798,7 +798,7 @@ class Part {
 - Κάθε `Part` γνωρίζει τον `Container` του και χρησιμοποιεί το δικό του lock
 - Τα parts δεν κάνουν deadlock μεταξύ τους, αν ακολουθείται η ίδια πολιτική
 
-#### Internal Containment Locking (2)
+### Internal Containment Locking (2)
 ```java
 class Container {
   class Part {
@@ -816,7 +816,7 @@ class Container {
   - Shared locks
   - Transactional locks
 
-### External Containment Locking
+## External Containment Locking
 ```java
 class Client {
   void f(Part p) {
@@ -835,7 +835,7 @@ class Client {
 - Έυθραυστο: Όλοι οι clients πρέπει να τηρούν το convention
 - Σπάει την encapsulation
 
-### Subclassing Unsfafe Code (1)
+## Subclassing Unsfafe Code (1)
 ```java
 class HandlerHelper {
   native void mountFileSystem();
@@ -844,7 +844,7 @@ class HandlerHelper {
 - Κώδικας σε native γλώσσα (π.χ C): δεν γνωρίζουμε αν είναι thread-safe
 - Πρέπει να τον προστατέψουμε με synchronization
 
-### Subclassing Unsafe Code (2)
+## Subclassing Unsafe Code (2)
 ```java
 class SafeHandlerHelper extends HandlerHelper {
   synchronized void mountFileSystem() {
@@ -858,7 +858,7 @@ class SafeHandlerHelper extends HandlerHelper {
   - Μπορούμε να φτιάξουμε wrapper object αντί για subclass
   - Ή να χρησιμοποιήσουμε template method pattern
 
-### State Dependent Actions
+## State Dependent Actions
 Προβλήματα που εξαρτώνται από κατάσταση του αντικειμένου
 - Ανάγνωση από άδειο buffer
 - Απόσυρση χρημάτων απο άδειο λογαριασμό
@@ -871,7 +871,7 @@ class SafeHandlerHelper extends HandlerHelper {
 - Timeout
 - Planning
 
-### Interfaces and Policies
+## Interfaces and Policies
 ```java
 public interface Buffer {
   int capacity();
@@ -887,7 +887,7 @@ public interface Buffer {
   - Περιμένει
   - Αγνοεί το αίτημα
 
-### Balking
+## Balking
 - Απορρίπτει τη λειτουργία αν η κατάσταση δεν είναι σωστή
 - Ελέγχει την κατάσταση στην αρχή της μεθόδου
 - Αν δεν ικανοποιείται: `throw new Failure(...)`
@@ -900,7 +900,7 @@ public interface Buffer {
 
 Σε concurrent περιβάλον, μόνο ο host (δηλαδή η κλάση) πρέπει να κάνει check-act, όχι ο client
 
-#### Παραδείγμα: Balking Bounded Buffer
+### Παραδείγμα: Balking Bounded Buffer
 ```java
 public class BalkingBoundedBuffer implements Buffer {
   private List data;
@@ -932,7 +932,7 @@ public class BalkingBoundedBuffer implements Buffer {
 - Απλό, αποδοτικό, χωρίς προβλήματα liveness
 - Δεν κάνει retry, δεν περιμένει - ο client πρέπει να χειριστεί το failure
 
-### Guarding
+## Guarding
 - Γενίκευση του locking για state-dependent actions
 - Αντί να κλειδώσει απλά, το thread περιμένει μέχρι να γίνει true μια συνθήκη
 
@@ -944,7 +944,7 @@ public class BalkingBoundedBuffer implements Buffer {
 
 Μπορεί να δημιοργήσει liveness προβλήματα (π.χ αν το άλλο thread δεν κάνει ποτέ update)
 
-### Guarding με busy wait (κακή πρακτική)
+## Guarding με busy wait (κακή πρακτική)
 ```java
 while (!condition);
 ```
@@ -955,7 +955,7 @@ while (!condition);
 Runtime.getRuntime().availableProcessors();
 ```
 
-### Guarding με Suspension (σωστή προσέγγιση)
+## Guarding με Suspension (σωστή προσέγγιση)
 ```java
 synchronized (obj) {
   while (!condition) {
@@ -968,7 +968,7 @@ synchronized (obj) {
 - Το `wait()` απελευθερώνει το lock και βάζει το thread στο wait set του `obj`
 - Όταν ξυπνήσει, ξαναπαίρνει το lock και ελέγχει ξανά τη συνθήκη
 
-### Αλλαγή Συνθήκης - Notifying
+## Αλλαγή Συνθήκης - Notifying
 ```java
 synchronized (obj) {
   condition = true;
@@ -980,7 +980,7 @@ synchronized (obj) {
   - Άλλα threads μπορεί να την άλλαξαν ξανά
   - Το wakeup μπορεί να είναι spurious
 
-### Wait Sets and Notifications (1)
+## Wait Sets and Notifications (1)
 - Κάθε java object έχει ένα wait set:
   - Περιέχει threads που έχουν καλέσει `wait()` πάνω στο object
 - Προϋποθέσεις
@@ -989,7 +989,7 @@ synchronized (obj) {
   - Ατομικά: απελευθερώνει το lock και το thread μπαίνει σε ένα wait set
   - Αν κρατά επαναλητπικά locks, τα απελευθερώνει όλα για το object
 
-### Wait Sets and Notifications (2)
+## Wait Sets and Notifications (2)
 Πώς ξυπνούν τα threads
 - `notifyAll()`
   - Ξυπνά όλα τα threads στο wait set
@@ -1002,7 +1002,7 @@ synchronized (obj) {
 
 Το lock πρέπει να επανακτηθεί πριν συνεχίσει το thread μετά το `wait()`
 
-### Wait Sets and Notification (3)
+## Wait Sets and Notification (3)
 Αποφύγετε `notify()` - μόνο για optimization και μόνο όταν:
 1. Ένα και μόνο thread ενδιαφέρεαι για την αλλαγή κατάστασης
 2. Όλα τα threads περιμένουν για την ίδια συνθήκη
@@ -1010,7 +1010,7 @@ synchronized (obj) {
 
 Προιμήστε `notifyAll()`, είναι πιο ασφαλές
 
-### Χρήση Wait/Notify = Monitor-style Conditions
+## Χρήση Wait/Notify = Monitor-style Conditions
 - Παρόμοια με condition variables σε:
   - POSIX threads
   - Monitors
@@ -1018,7 +1018,7 @@ synchronized (obj) {
 
 Από Java 5+: προτιμήστε `Lock` + `Condition`, για περισσότερη ευελιξία
 
-### Παράδειγμα: Guarded Bounded Buffer
+## Παράδειγμα: Guarded Bounded Buffer
 ```java
 public class GuarderBoundedBuffer implements Buffer {
   private List data;
@@ -1059,7 +1059,7 @@ public class GuarderBoundedBuffer implements Buffer {
 Thread-safe, αποφέυγει race conditions
 Δεν είναι επεκτάσιμο εύκολα σε πολλά conditions -> προτιμότερη η χρήση `Condition` από java 5+
 
-### Timeout (ανάμεσα σε Balking & Guarding)
+## Timeout (ανάμεσα σε Balking & Guarding)
 - Μερική αναμονή: Δεν περιμένουμε για πάντα
 - Υλοποιείται με `wait(timeout)` ή `awaits(timeout,TimeUnit)`
 - Χρήσεις:
@@ -1069,7 +1069,7 @@ Thread-safe, αποφέυγει race conditions
   - Καθυστέρηση ανάμεσα στο `wait` και το resume
   - Δεν ξέρουμε πότε ακριβώς συνεχίζει
 
-### Optimistic Techniques
+## Optimistic Techniques
 - Αντί για `wait()` ή `lock()` -> δοκιμάζουμε και ξαναπροσπαθούμε (retry)
 - Πιο αποδοτικό όταν:
   - Υπάρχουν πολλού πυρήνες
@@ -1079,7 +1079,7 @@ Thread-safe, αποφέυγει race conditions
 - Άν όλα τα threads αποτυγχάνουν και ξαναδοκιμάζουν συνεχώς
 - Λύση: Περιορισμός επαναλήψεων ή χρήση `Thread.yield()`
 
-### Παράδειγμα: Optimistic Bounded Counter
+## Παράδειγμα: Optimistic Bounded Counter
 ```java
 public class OptimisticBoundedCounter {
   private final long MIN, MAX;

@@ -275,32 +275,33 @@ void *consumer(void *arg) {
 - Ο **παραγωγός (producer)** δημιουργεί tasks και τα προσθέτει σε μία ουρά, χρησιμοποιόντας `pthread_mutex_lock` για να διασφαλίσεις ότι δεν υπάρχει ταυτόχρονη πρόσβαση.
 - Ο **καταλωτής (consumer)** περιμένει μεχρι να υπάρχει διαθέσιμο task, αποκτά το mutex, αφαιρή το task και το επεξεργάζεται
 
-
 ### Συγχρονισμός με Condition Variables
-#### Τί είναι Condition Variables
+#### Τι είναι Condition Variables
+
 - Οι Condition Variables χρησιμοποιούνται μαζί με mutexes για να επιτρέψουν σε ένα thread να περιμένει να ικανοποιηθεί μία συνθήκη.
-- Χρησιμοποιείται σε περιπτώσεις όπου ένα thread πρέπει να περιμένει ένα γεγονός που προκαλείται απο κάποιο άλλο thread
+- Χρησιμοποιούνται σε περιπτώσεις όπου ένα thread πρέπει να περιμένει ένα γεγονός που προκαλείται από κάποιο άλλο thread.
 - Ένα thread μπορεί να περιμένει μέχρι μία συνθήκη να γίνει αληθής:
-    1. Κλειδώνει το mutex
-    2. Ελέγχει αν μία μεταβλητή ικανοποιέι τη συνθήκη
-    3. Αν η συνθήκη δεν ικανονοποιείται, περιμένει αφήνοντας το lock
-    4. Μόλις η συνθήκη ικανοποιηθεί από κάποιο άλλο thread, αυτό ξυπνά όσα threads περιμένουν στη συνθήκη
-    5. Ένα απο αυτά θα κλειδώσει και τα συνεχίσει έχοντας το mutex
-- Το API της condition:
+    1. Κλειδώνει το mutex.
+    2. Ελέγχει αν μία μεταβλητή ικανοποιεί τη συνθήκη.
+    3. Αν η συνθήκη δεν ικανοποιείται, περιμένει αφήνοντας το lock.
+    4. Μόλις η συνθήκη ικανοποιηθεί από κάποιο άλλο thread, αυτό ξυπνά όσα threads περιμένουν στη συνθήκη.
+    5. Ένα από αυτά θα κλειδώσει ξανά και θα συνεχίσει έχοντας το mutex.
+
+- Το API της Condition Variable:
 ```c
 int pthread_cond_init(
-    pthread_cond_t ∗cond,
-    const pthread_condattr_t ∗attr);
-int pthread_cond_destroy(pthread_cond_t ∗cond);
+    pthread_cond_t *cond,
+    const pthread_condattr_t *attr);
+int pthread_cond_destroy(pthread_cond_t *cond);
 int pthread_cond_wait(
-    pthread_cond_t ∗cond,
-    pthread_mutex_t ∗mutex);
+    pthread_cond_t *cond,
+    pthread_mutex_t *mutex);
 int pthread_cond_timedwait(
-    pthread_cond_t ∗cond,
-    pthread_mutex_t ∗mutex, 
-    const struct timespec ∗wtime);
-int pthread_cond_signal(pthread_cond_t ∗cond);
-int pthread_cond_broadcast(pthread_cond_t ∗cond);
+    pthread_cond_t *cond,
+    pthread_mutex_t *mutex, 
+    const struct timespec *wtime);
+int pthread_cond_signal(pthread_cond_t *cond);
+int pthread_cond_broadcast(pthread_cond_t *cond);
 ```
 
 #### Παράδειγμα: Producer-Consumer με Condition Variables
@@ -444,6 +445,12 @@ void *rare_writer_func(void *arg) {
 | Δεν διαχωρίζει αναγνώστες-συγγραφείς | Χρησιμοποιεί δύο επίπεδα πρόσβασης |
 
 RW locks είναι ιδανικά αν τα περισσότερα threads διαβάζουν και σπάνια γίνονται εγγραφές.
+
+**Summary**:
+
+- Πολλοί **readers** μπορούν να διαβάζουν ταυτόχρονα.
+- **Writer** χρειάζεται αποκλειστική πρόσβαση (μόνο του), άρα περιμένει αν υπάρχουν active readers ή άλλος writer.
+- Όταν ένας writer γράφει, κανείς άλλος (reader ή writer) δεν μπαίνει.
 
 ### Bariers: Συγχρονισμός μεταξύ πολλών threads
 #### Τί είναι τα Barriers;

@@ -1,41 +1,70 @@
 {
   "main": {
-    "id": "8403bd4a4d6a1d6e",
+    "id": "84f6782652142063",
     "type": "split",
     "children": [
       {
-        "id": "9d8a8d67811c4a25",
+        "id": "08b4cfa477865c8d",
         "type": "tabs",
         "children": [
           {
-            "id": "fceb4ddce03b0393",
+            "id": "62dfccd64390853f",
             "type": "leaf",
             "state": {
               "type": "markdown",
               "state": {
-                "file": "ReadMe.md",
+                "file": "ΗΥ371_Ψηφιακή_Επεξεργασία_Εικόνων/Διάλεξη2.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "ReadMe"
+              "title": "Διάλεξη2"
+            }
+          },
+          {
+            "id": "0bba8bfd7e7ef319",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "ΗΥ371_Ψηφιακή_Επεξεργασία_Εικόνων/Διάλεξη1.md",
+                "mode": "source",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "Διάλεξη1"
+            }
+          },
+          {
+            "id": "3e42354f2c9e0c6e",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "ΗΥ371_Ψηφιακή_Επεξεργασία_Εικόνων/Δημιουργία Ψηφιακής εικόνας.md",
+                "mode": "source",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "Δημιουργία Ψηφιακής εικόνας"
             }
           }
-        ]
+        ],
+        "currentTab": 2
       }
     ],
     "direction": "vertical"
   },
   "left": {
-    "id": "f0b9ee23db885db8",
+    "id": "de5fcaf158a5fc6a",
     "type": "split",
     "children": [
       {
-        "id": "775019d8628d55d7",
+        "id": "9e6d338ad794ad79",
         "type": "tabs",
         "children": [
           {
-            "id": "53f028e2560bf645",
+            "id": "37feab356e5f10b5",
             "type": "leaf",
             "state": {
               "type": "file-explorer",
@@ -48,7 +77,7 @@
             }
           },
           {
-            "id": "2f0635ce36efd71c",
+            "id": "84a59f1520960a20",
             "type": "leaf",
             "state": {
               "type": "search",
@@ -65,7 +94,7 @@
             }
           },
           {
-            "id": "2b1c8397d735148d",
+            "id": "d232e15b24f67da1",
             "type": "leaf",
             "state": {
               "type": "bookmarks",
@@ -81,20 +110,20 @@
     "width": 300
   },
   "right": {
-    "id": "5de2e03c08fe5def",
+    "id": "190a234464ee6d6d",
     "type": "split",
     "children": [
       {
-        "id": "9a9c0a5f754eba30",
+        "id": "5728932f03e6030c",
         "type": "tabs",
         "children": [
           {
-            "id": "630a946910d7c2a9",
+            "id": "8d830fcaee937ba7",
             "type": "leaf",
             "state": {
               "type": "backlink",
               "state": {
-                "file": "ReadMe.md",
+                "file": "HY335_Δίκτυα_Υπολογιστών/Κεφάλαιο_1.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -104,25 +133,25 @@
                 "unlinkedCollapsed": true
               },
               "icon": "links-coming-in",
-              "title": "Backlinks for ReadMe"
+              "title": "Backlinks for Κεφάλαιο_1"
             }
           },
           {
-            "id": "81cdce5e647e453a",
+            "id": "8a0074c5c1667b1f",
             "type": "leaf",
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "ReadMe.md",
+                "file": "HY335_Δίκτυα_Υπολογιστών/Κεφάλαιο_1.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               },
               "icon": "links-going-out",
-              "title": "Outgoing links from ReadMe"
+              "title": "Outgoing links from Κεφάλαιο_1"
             }
           },
           {
-            "id": "57821927c964c589",
+            "id": "2720f3923f4a6fcf",
             "type": "leaf",
             "state": {
               "type": "tag",
@@ -137,18 +166,18 @@
             }
           },
           {
-            "id": "d08861d0dca501c0",
+            "id": "384db0282690d6cc",
             "type": "leaf",
             "state": {
               "type": "outline",
               "state": {
-                "file": "ReadMe.md",
+                "file": "HY335_Δίκτυα_Υπολογιστών/Κεφάλαιο_1.md",
                 "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
               },
               "icon": "lucide-list",
-              "title": "Outline of ReadMe"
+              "title": "Outline of Κεφάλαιο_1"
             }
           }
         ]
@@ -169,13 +198,23 @@
       "bases:Create new base": false
     }
   },
-  "active": "fceb4ddce03b0393",
+  "active": "3e42354f2c9e0c6e",
   "lastOpenFiles": [
+    "ΗΥ371_Ψηφιακή_Επεξεργασία_Εικόνων/Εισαγωγή.md",
+    "ΗΥ371_Ψηφιακή_Επεξεργασία_Εικόνων/Διάλεξη3.md",
+    "ΗΥ371_Ψηφιακή_Επεξεργασία_Εικόνων/Δημιουργία Ψηφιακής εικόνας.md",
+    "ΗΥ371_Ψηφιακή_Επεξεργασία_Εικόνων/images/im19.jpg",
+    "ΗΥ371_Ψηφιακή_Επεξεργασία_Εικόνων/images/im18.jpg",
+    "ΗΥ371_Ψηφιακή_Επεξεργασία_Εικόνων/images/im17.jpg",
+    "ΗΥ371_Ψηφιακή_Επεξεργασία_Εικόνων/images/im16.jpg",
+    "ΗΥ371_Ψηφιακή_Επεξεργασία_Εικόνων/images/im15.jpg",
+    "ΗΥ371_Ψηφιακή_Επεξεργασία_Εικόνων/images/im14.jpg",
+    "ΗΥ371_Ψηφιακή_Επεξεργασία_Εικόνων/images/im13.jpg",
+    "ΗΥ371_Ψηφιακή_Επεξεργασία_Εικόνων/images/im12.jpg",
+    "ΗΥ371_Ψηφιακή_Επεξεργασία_Εικόνων/images/im11.jpg",
+    "ΗΥ371_Ψηφιακή_Επεξεργασία_Εικόνων/images/im10.jpg",
+    "ReadMe.md",
     "HY335_Δίκτυα_Υπολογιστών/Κεφάλαιο_1.md",
-    "HY215_Εφαρμοσμένα_Μαθηματικά_για_Μηχανικούς/1)Μιγαδικοί-Αριθμοί.md",
-    "HY335_Δίκτυα_Υπολογιστών/images/im1.png",
-    "HY335_Δίκτυα_Υπολογιστών/images/Screenshot from 2025-10-06 13-28-31.png",
-    "HY335_Δίκτυα_Υπολογιστών/images",
-    "2025-10-06.md"
+    "HY335_Δίκτυα_Υπολογιστών/Book.pdf"
   ]
 }

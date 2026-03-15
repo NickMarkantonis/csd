@@ -1,4 +1,5 @@
 # HY473 - Αναγώριση Προτύπων
+## Μπεϋζιανή Θεωρία Αποφάσεων
 
 ## Βασικά
 Η Μπεϋζιανή Θεωρία Αποφάσεων (Baysian Decision Theory) είναι μια μέθοδος λήψης αποφάσεων που βασίζεται στην πιθανότητα και στο κόστος/όφελος των αποτελεσμάτων. Χρησιμοποιεί πιθανότητες πριν και μετά την επεξεργασία των δεδομένων για να αποφασίσει με ποιον τρόπο θα ελαχιστοποιηθεί το αναμενόμενο κόστος.
@@ -147,20 +148,20 @@ $$ g_i(\mathbf{x}) = -\frac{1}{2\sigma^2}\left[\mathbf{x}^T\mathbf{x} - 2\boldsy
 
 Αλλά αφού ο όρος $\mathbf{x}^T\mathbf{x}$ είναι κοινός, η τελική μορφή θα είναι γραμμική:
 
-$$ \boxed{g_i(\mathbf{x}) = \mathbf{w}_i^T \mathbf{x} + w_{i0}} $$
+$$ \boxed{g_i(\mathbf{x}) = \mathbf{w_i}^T \mathbf{x} + w_{i0}} $$
 
 Όπου:
 
-$$ \mathbf{w}_i = \frac{1}{\sigma^2}\boldsymbol{\mu}_i, \qquad w_{i0} = -\frac{1}{2\sigma^2}\boldsymbol{\mu}_i^T\boldsymbol{\mu}_i + \ln P(\omega_i) $$
+$$ \mathbf{w_i} = \frac{1}{\sigma^2}\boldsymbol{\mu}_i, \qquad w_{i0} = -\frac{1}{2\sigma^2}\boldsymbol{\mu}_i^T\boldsymbol{\mu}_i + \ln P(\omega_i) $$
  
-<p align="center" >
+<p align="center">
 <img src="images/1.png" width=65%>
 <img src="images/2.png" width=32%>
 </p>
 
-Η επιφάνεια απόφασης θα είναι $\mathbf{w}^T(\mathbf{x}-\mathbf{x}_0)=0$, όπου:
+Η επιφάνεια απόφασης θα είναι $\mathbf{w}^T(\mathbf{x}-\mathbf{x_0})=0$, όπου:
 
-$$ \mathbf{w} = \boldsymbol{\mu}_i - \boldsymbol{\mu}_j, \qquad \mathbf{x}_0 = \frac{1}{2}(\boldsymbol{\mu}_i + \boldsymbol{\mu}_j) - \frac{\sigma^2}{\|\boldsymbol{\mu}_i - \boldsymbol{\mu}_j\|^2} \ln\!\frac{P(\omega_i)}{P(\omega_j)}(\boldsymbol{\mu}_i - \boldsymbol{\mu}_j) $$
+$$ \mathbf{w} = \boldsymbol{\mu}_i - \boldsymbol{\mu}_j, \qquad \mathbf{x_0} = \frac{1}{2}(\boldsymbol{\mu}_i + \boldsymbol{\mu}_j) - \frac{\sigma^2}{\|\boldsymbol{\mu}_i - \boldsymbol{\mu}_j\|^2} \ln\!\frac{P(\omega_i)}{P(\omega_j)}(\boldsymbol{\mu}_i - \boldsymbol{\mu}_j) $$
 
 ### 2. $\Sigma_i = \Sigma$
 Στην Περίπτωση 2, ο πίνακας συνδιακύμανσης είναι ίδιος για όλες τις κλάσεις ($\boldsymbol{\Sigma}_i = \boldsymbol{\Sigma}$), οπότε όλα τα σύννεφα δεδομένων έχουν το ίδιο σχήμα και προσανατολισμό — διαφέρουν μόνο ως προς το κέντρο $\boldsymbol{\mu}_i$.
@@ -175,13 +176,13 @@ $$ g_i(\mathbf{x}) = -\frac{1}{2}\underbrace{(\mathbf{x}-μ_i)^T \Sigma^{-1}(\ma
 Όπως βλέπουμε ένα κομμάτι της καινούργιας μας συνάρτησης είναι η τετραγωνισμένη απόσταση *Mahalanobis*. Είναι ένας τύπος με τον οποίο υπολογίζουμε την απόσταση δύο σημείων που λαμβάνει και υπόψη την συσχέτιση των μεταβλητών. Άρα στην 2η περίπτωση επιλέγουμε την κλάση της οποίας το κέντρο είναι πιο κοντά στο $\mathbf{x}$ με βάση την απόσταση *Mahalanobis*.
 
 Και η γραμμική μορφή:
-$$ \boxed{g_i(x) = \mathbf{w}_i^Tx +w_{i0}} $$
+$$ \boxed{g_i(x) = \mathbf{w_i}^Tx +w_{i0}} $$
 
 Όπου:
 
-$$ \mathbf{w}_i = \boldsymbol{\Sigma}^{-1}\boldsymbol{\mu}_i, \qquad w_{i0} = -\frac{1}{2}\boldsymbol{\mu}_i^T \boldsymbol{\Sigma}^{-1} \boldsymbol{\mu}_i + \ln P(\omega_i) $$
+$$ \mathbf{w_i} = \boldsymbol{\Sigma}^{-1}\boldsymbol{\mu}_i, \qquad w_{i0} = -\frac{1}{2}\boldsymbol{\mu}_i^T \boldsymbol{\Sigma}^{-1} \boldsymbol{\mu}_i + \ln P(\omega_i) $$
 
-Η επιφάνεια απόστασης θα είναι όταν $\mathbf{w}^T(\mathbf{x} - \mathbf{x}_0) = 0$, όπου:
+Η επιφάνεια απόστασης θα είναι όταν $\mathbf{w}^T(\mathbf{x} - \mathbf{x_0}) = 0$, όπου:
 $$\mathbf{w} = \boldsymbol{\Sigma}^{-1}(\boldsymbol{\mu}_i - \boldsymbol{\mu}_j)$$
 
 
@@ -191,9 +192,9 @@ $$\mathbf{w} = \boldsymbol{\Sigma}^{-1}(\boldsymbol{\mu}_i - \boldsymbol{\mu}_j)
 Κάθε κλάση έχει δικό της πίνακα συνδιακύμανσης
 Τετραγωνική συνάρτηση διαχωρισμού:
 
-$$g_i(\mathbf{x}) = \mathbf{x}^T \mathbf{W}_i \mathbf{x} + \mathbf{w}_i^T \mathbf{x} + w_{i0}$$
+$$g_i(\mathbf{x}) = \mathbf{x}^T \mathbf{w_i} \mathbf{x} + \mathbf{w_i}^T \mathbf{x} + w_{i0}$$
  
-$$\mathbf{W}_i = -\frac{1}{2}\boldsymbol{\Sigma}_i^{-1}, \quad \mathbf{w}_i = \boldsymbol{\Sigma}_i^{-1}\boldsymbol{\mu}_i$$
+$$\mathbf{w_i} = -\frac{1}{2}\boldsymbol{\Sigma}_i^{-1}, \quad \mathbf{w_i} = \boldsymbol{\Sigma}_i^{-1}\boldsymbol{\mu}_i$$
  
 $$w_{i0} = -\frac{1}{2}\boldsymbol{\mu}_i^T \boldsymbol{\Sigma}_i^{-1} \boldsymbol{\mu}_i - \frac{1}{2}\ln|\boldsymbol{\Sigma}_i| + \ln P(\omega_i)$$
 
@@ -201,4 +202,10 @@ $$w_{i0} = -\frac{1}{2}\boldsymbol{\mu}_i^T \boldsymbol{\Sigma}_i^{-1} \boldsymb
 Όταν έχουμε δυο κλάσεις είναι πρωφανός ότι μπορούμε να κάνουμε δύο πιθανά σφάλματα:
 1. το $\mathbf{x}$ ανήκει στο $R_1$ ενώ η αληθινή κλάση είναι $\omega_2$
 2. το $\mathbf{x}$ ανήκει στο $R_2$ ενώ η αληθινή κλάση είναι $\omega_1$
+
+$$ P(\text{error}) = \int_{R_1} p(\mathbf{x}|\omega_2)P(\omega_2)d\mathbf{x} + \int_{R_2} p(\mathbf{x}|\omega_1)P(\omega_1)d\mathbf{x} $$
+
+<p align="center">
+<img src="images/3.png" width=60%>
+</p>
 

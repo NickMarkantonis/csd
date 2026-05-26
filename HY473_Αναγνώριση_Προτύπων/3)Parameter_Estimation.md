@@ -80,7 +80,7 @@ $$ \hat μ = \frac{1}{n} \sum^n_{k=1}\mathbf{x_k} \qquad \hat \Sigma = \frac{1}{
 Το $\hat \Sigma$ είναι ο αριθμιτικός μέσος των $n$ πινάκων $(\mathbf{x_k} - \hat μ)(\mathbf{x_k} - \hat μ)^T$, που είναι η εμπειρική εκτίμηση του πίνακα συνδυακύμανσης.
 
 ## Εκτιμητής Bayes
-Ας αναφέρουμε αρχικά τις διαφορές μεταξύ _MLE_ και _Bayesian_
+Μπορούμε να εκτιμήσουμε την τιμή $\theta$, aς αναφέρουμε αρχικά τις διαφορές μεταξύ _MLE_ και _Bayesian_
 
 | | MLE | Bayesian |
 |-|-|-|
@@ -92,8 +92,89 @@ $$ \hat μ = \frac{1}{n} \sum^n_{k=1}\mathbf{x_k} \qquad \hat \Sigma = \frac{1}{
 
 ### Bayesian learning για ταξινόμηση
 Στόχος μας είναι να υπολογίσουμε το $P(\omega_i|\mathbf{x},D)$ δεδομένου συνόλου εκπαίδευσης $D = \{ D_1,...,D_c \}$
-Εφαρμόζουμε τον κανόνα bayes:
+Για κάθε μη-ορισμένο $\mathbf{x}$ εφαρμόζουμε τον γνωστό κανόνα Bayes:
 
 $$ P(\omega_i|\mathbf{x},D) = \frac{p(\mathbf{x}|\omega_i,D)P(\omega_i|D)}{\sum^c_{j=1}p(\mathbf{x}|\omega_j,D)P(\omega_j|D)} $$
 
+Εδώ μπορούμε να κάνουμε δύο απλοποιήσεις:
+1. Η πιθανότητα $P(\omega_i)$ μας είναι γνωστή πως δεν αλλάζει με το $D$ οπότε: $P(\omega_i | D) = P(\omega_i)$
+2. Μόνο τα στοιχεία $D_i$ έχουν δεδομένα για την $p(\mathbf{x} | \omega_i, D_i)$ 
+
+$$ P(\omega_i|\mathbf{x},D_i) = \frac{p(\mathbf{x}|\omega_i,D_i)P(\omega_i)}{\sum^c_{j=1}p(\mathbf{x}|\omega_j,D_i)P(\omega_j)} $$
+
+> Θέλουμε να εκτημήσουμε την συνάρτηση $p(\mathbf{x},D_i)$. Δηλαδή με απλά ελληνικά: "πόσο πιθανό είναι το $\mathbf{x}$ να προέρχεται από την κλάση $i$ δεδομένων των δειγμάτων εκπάιδευσης $D_i$"
+
+1. Για κάθε κλάση γνωρίζουμε την μορφή της συνάρτηση πυκνότητας πιθανότητας αλλά όχι την τιμή του $\theta$ 
+2. Έχουμε μία αρχική γνώση για το $\theta$ στην μορφή μίας συνάρτησης $p(\theta)$
+3. Για κάθε κλάση έχουμε ένα σύνολο $D^n = \{\mathbf{x}_1,\dots,\mathbf{x}_n\}$ από $n$ ανεξάρτητα στοιχεία
+  
+Τότε:
+
+$$ p(x | D) = \int_\theta p(x | \theta) p(\theta | D) d\theta $$
+
+- $p(x|\theta)$ αν ήξερα το $\theta$ πόσο πιθανό είναι το $\mathbf{x}$
+- $p(\theta|D)$ πόσο πιστεύω μπορεί ότι το $\theta$ έχει αυτή την τιμή δεδομένου του $D$
+
+Σε αντίθεση με το MLE λοιπόν το οποίο βρίσκει το καλύτερο $\hat \theta$, το Bayesian σταθμίζει όλα τα πιθανά $\theta$
+
+
+### Υπολογισμός $p(\theta|D)$
+
+Για να υπολογίσουμε το posterior $p(\theta|D)$, εφαρμόζουμε ξανά τον κανόνα Bayes
+
+$$ p(\theta|D) = \frac{p(D|\theta)p(\theta)}{\int_\theta p(D|\theta)p(\theta)d\theta} $$
+
+Αφού όμως τα δείγματα είναι ανεξάρτητα έχουμε:
+
+$$ p(D|\theta) = \prod^n_{k=1}p(\mathbf{x}_k|\theta) $$
+
+> **Παρατήρηση - Σύνδεση με MLE:** Αν το $p(D|\theta)$ έχει έντονη κορυφή σε ένα σημείο $\theta^*$ και το $p(\theta^*) \neq 0$, τότε και το $p(\theta|D)$ θα έχει κορυφή στο ίδιο $\theta^*$. Τότε:
+> $$ p(\mathbf{x}|D) \approx p(\mathbf{x}|\theta^*) $$
+> Όμως το $\theta^*$ είναι ακριβώς ο εκτιμητής **MLE** του $\theta$! Δηλαδή με αρκετά δεδομένα, οι δύο μέθοδοι συγκλίνουν.
+
+## Bayesian Learning
+
+Μας ενδιαφέρει πως εξελίσσεται το posterior $p(\theta|D^n)$ καθώς προσθέτουμε και άλλα δείγματα. Για αυτό χρησιμοποιούμε την ανεξαρτησία:
+
+$$ p(D^n|\theta) = \prod^n_{k=1}p(\mathbf{x}_k|\theta) = p(\mathbf{x}_n|\theta) \cdot p(D^{n-1}|\theta) $$
+
+Μπορούμε λοιπόν να αντικαταστήσουμε τον κανόνας Bayes:
+
+$$ p(\theta|D^n) = \frac{p(\mathbf{x}_n|\theta) \cdot p(\theta|D^{n-1})}{\int_\theta p(\mathbf{x}_n|\theta) \cdot p(\theta|D^{n-1})d\theta} $$
+
+Και καταλήγουμε σε μία αναδρομική σχέση όπου:
+
+$$ \boxed{p(\theta | D^0) = p(\theta)} $$
+
+Έτσι δημιουργήτε μια ακολουθία από posteriors:
+
+$$ p(\theta) \to p(\theta|\mathbf{x}_1) \to p(\theta|\mathbf{x}_1,\mathbf{x}_2) \to \dots \to p(\theta|\mathbf{x}_1,\dots,\mathbf{x}_n) $$
+
+Κάθε νέα παρατήρηση κάνει την εκτίμηση πιο ακριβές. Αυτό ονομάζεται **Bayesian recursive (incremental) learning**.
+
+Εδώ μπορεί αν διατηπωθεί ένα πρόβλημα, έστω:
+- $p(x|\mu) \sim \mathcal{N}(\mu, \sigma^2)$ — γνωστή η διακύμανση $\sigma^2$, άγνωστη η μέση τιμή $\mu$
+- $p(\mu) \sim \mathcal{N}(\mu_0, \sigma_0^2)$ — prior για το $\mu$
+  - $\mu_0$: η καλύτερη εκ των προτέρων εκτίμησή μας
+  - $\sigma_0^2$: πόσο **αβέβαιοι** είμαστε για το $\mu_0$ (μεγάλο $\sigma_0^2 \Rightarrow$ μικρή εμπιστοσύνη στο prior)
+
+Από τον κανόνα Bayes:
+
+$$ p(\mu|D) = \alpha \prod^n_{k=1}p(x_k|\mu) \cdot p(\mu) $$
+
+όπου $\alpha$ είναι παράγοντας κανονικοποίησης. Αντικαθιστώντας τις δύο Gaussian:
+
+$$ p(\mu|D) = \alpha \prod^n_{k=1}\frac{1}{\sqrt{2\pi}\sigma}\exp\!\left[-\frac{1}{2}\Bigl(\frac{x_k-\mu}{\sigma}\Bigr)^2\right] \cdot \frac{1}{\sqrt{2\pi}\sigma_0}\exp\!\left[-\frac{1}{2}\Bigl(\frac{\mu-\mu_0}{\sigma_0}\Bigr)^2\right] $$
+
+Μετά από αλγεβρική επεξεργασία (συγκέντρωση εκθετών):
+
+$$ p(\mu|D) = \alpha''\exp\!\left[-\frac{1}{2}\left[\Bigl(\frac{n}{\sigma^2}+\frac{1}{\sigma_0^2}\Bigr)\mu^2 - 2\Bigl(\frac{1}{\sigma^2}\sum^n_{k=1}x_k + \frac{\mu_0}{\sigma_0^2}\Bigr)\mu\right]\right] $$
+
+Αυτό έχει τη μορφή Gaussian, δηλαδή **$p(\mu|D) \sim \mathcal{N}(\mu_n,\sigma_n^2)$** με:
+
+$$ \boxed{\mu_n = \frac{n\sigma_0^2}{n\sigma_0^2+\sigma^2}\hat\mu_n + \frac{\sigma^2}{n\sigma_0^2+\sigma^2}\mu_0} $$
+
+$$ \boxed{\sigma_n^2 = \frac{\sigma_0^2\sigma^2}{n\sigma_0^2+\sigma^2}} $$
+
+όπου $\hat\mu_n = \frac{1}{n}\sum^n_{k=1}x_k$ είναι ο αριθμητικός μέσος (το MLE).
 

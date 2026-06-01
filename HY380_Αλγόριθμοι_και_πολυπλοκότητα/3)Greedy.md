@@ -72,17 +72,6 @@ $$ \boxed{\Theta(E \log V) \text{ με binary heap}} \qquad \boxed{\Theta(V^2) \
 Ίδιος αλγόριθμος με Kruskal/Prim αλλά με **φθίνουσα** ταξινόμηση (ή αρνητικοποίησε τα βάρη).
 $$ \boxed{\Theta(E \log E)} $$
 
-#### MST με περιορισμούς — κόμβοι $U$ ως φύλλα
-
-_Πρόβλημα:_ βρες το ελαφρύτερο spanning tree όπου όλοι οι κόμβοι του $U \subseteq V$ είναι φύλλα.
-
-```
-1. Βρες MST T' του υπογράφου G[V\U]  (μόνο εσωτερικοί κόμβοι)
-2. Για κάθε u ∈ U: πρόσθεσε τη φθηνότερη ακμή (u, w) με w ∈ V\U
-```
-$$ \boxed{\Theta(E \log V)} $$
-
-
 
 ### Dijkstra — Συντομότερα Μονοπάτια
 
@@ -111,30 +100,7 @@ $$ \boxed{\Theta((V+E)\log V) \text{ με binary heap}} \qquad \boxed{\Theta(V^2
 **Βελτίωση για μικρά ακέραια βάρη** $w \leq W$: αντικατάστησε κάθε ακμή βάρους $w$ με $w$ μοναδιαίες ακμές και τρέξε BFS.
 $$ \boxed{\Theta(V + WE) \xrightarrow{W = O(1)} \Theta(V+E)} $$
 
-
-
-### Huffman — Βέλτιστη Κωδικοποίηση
-
-**Πρόβλημα:** δώσε prefix code μεταβλητού μήκους σε $n$ σύμβολα ώστε να ελαχιστοποιείται το μέσο μήκος κωδικοποίησης.
-
-```
-Huffman(f[1..n]):       // f[i] = συχνότητα συμβόλου i
-    Q = min-heap με n κόμβους (ένας ανά σύμβολο)
-    repeat n-1 φορές:
-        x = extractMin(Q)
-        y = extractMin(Q)
-        z = νέος κόμβος με f[z] = f[x] + f[y], παιδιά x, y
-        insert(Q, z)
-    return Q  // ρίζα = το δέντρο
-```
-
-$$ \boxed{\Theta(n \log n)} $$
-
-**Για $k$-αδικό Huffman** (π.χ. τριαδικό $k=3$): ένωσε τους $k$ ελάχιστους σε κάθε βήμα. Χρειάζεται padding ώστε $n \equiv 1 \pmod{k-1}$ — προσθέτουμε ψεύτικα σύμβολα συχνότητας $0$.
-
-
-
-### Fractional Knapsack — Κλασματικό Σακίδιο
+### Fractional Knapsack 
 
 **Πρόβλημα:** $n$ αντικείμενα με βάρος $w_i$ και αξία $v_i$, χωρητικότητα $W$. Επιτρέπεται να πάρεις **κλάσμα** αντικειμένου.
 
@@ -154,25 +120,6 @@ $$ \boxed{\Theta(n \log n)} $$
 
 > **Προσοχή:** Για **0-1 knapsack** ο greedy **αποτυγχάνει** → χρειάζεται Dynamic Programming.
 
-
-
-### Activity Selection — Επιλογή Δραστηριοτήτων
-
-**Πρόβλημα:** $n$ δραστηριότητες με $[s_i, f_i]$· επέλεξε το μέγιστο πλήθος μη-επικαλυπτόμενων.
-
-```
-ActivitySelection(activities):
-    sort by finish time f[i] ascending
-    select first activity
-    for each remaining activity i:
-        if s[i] >= f[last selected]:
-            select i
-```
-
-$$ \boxed{\Theta(n \log n)} $$
-
-
-
 ### Σύνοψη
 
 | Αλγόριθμος | Πρόβλημα | Πολυπλοκότητα | Greedy κριτήριο |
@@ -180,9 +127,7 @@ $$ \boxed{\Theta(n \log n)} $$
 | Kruskal | MST | $\Theta(E \log E)$ | ελαφρύτερη ακμή χωρίς κύκλο |
 | Prim | MST | $\Theta(E \log V)$ | ελαφρύτερη ακμή που επεκτείνει το δέντρο |
 | Dijkstra | Shortest paths | $\Theta((V+E)\log V)$ | κόμβος με min προσωρινή απόσταση |
-| Huffman | Optimal prefix code | $\Theta(n \log n)$ | ένωσε τα δύο σπανιότερα σύμβολα |
 | Fractional Knapsack | Μεγιστοποίηση αξίας | $\Theta(n \log n)$ | μεγαλύτερος λόγος $v_i/w_i$ |
-| Activity Selection | Μέγιστο σύνολο | $\Theta(n \log n)$ | νωρίτερος χρόνος λήξης |
 
 
 
@@ -192,4 +137,3 @@ $$ \boxed{\Theta(n \log n)} $$
 - **Longest Path**: το «πάρε πάντα τη μεγαλύτερη ακμή» δεν οδηγεί στο μέγιστο συνολικό μονοπάτι.
 - **TSP / Hamiltonian Path**: NP-hard, κανένας greedy δεν εγγυάται βέλτιστο.
 - Γενικά: αν μπορείς να φτιάξεις **αντιπαράδειγμα** όπου η τοπικά βέλτιστη επιλογή χαλάει τη συνολική λύση → greedy αποτυγχάνει → δοκίμασε DP.
-- 
